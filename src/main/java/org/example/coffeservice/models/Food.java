@@ -1,6 +1,8 @@
 package org.example.coffeservice.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "food")
@@ -10,8 +12,13 @@ public class Food {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Food name cannot be blank")
     private String name;
+
+    @Min(value = 0, message = "Price must be non-negative")
     private double price;
+
+    @NotBlank(message = "Food type cannot be blank")
     private String foodType;
 
     public Food() {}

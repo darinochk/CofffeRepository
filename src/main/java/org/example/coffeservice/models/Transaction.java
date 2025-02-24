@@ -1,6 +1,7 @@
 package org.example.coffeservice.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "transaction")
@@ -10,6 +11,7 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Transaction status cannot be blank")
     private String status;
 
     public Transaction() {}

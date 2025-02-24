@@ -71,12 +71,13 @@ public class BookingService {
             booking.setUser(currentUser);
 
             if (isDeskAvailable(booking.getDesk().getId(), booking.getStartDate(), booking.getEndDate())) {
+                booking.setStatus("IS BEING PROCESSED");
                 Booking savedBooking = bookingRepository.save(booking);
 
                 OrderDetails orderDetails = new OrderDetails();
                 orderDetails.setBooking(savedBooking);
-                orderDetails.setAmount(0.0); // Default value for now
-                orderDetails.setStatus(null); // Default value for now
+                orderDetails.setAmount(0.0);
+                orderDetails.setStatus(null);
 
                 orderDetailsRepository.save(orderDetails);
 

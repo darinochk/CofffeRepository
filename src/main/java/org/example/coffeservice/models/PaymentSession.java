@@ -1,6 +1,7 @@
 package org.example.coffeservice.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.util.Date;
 
 @Entity
@@ -11,10 +12,19 @@ public class PaymentSession {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Full name is required")
     private String fullName;
+
+    @NotBlank(message = "Email is required")
     private String email;
+
+    @NotBlank(message = "Description is required")
     private String description;
+
+    @NotNull(message = "Order date is required")
     private Date orderDate;
+
+    @Min(value = 0, message = "Amount must be non-negative")
     private double amount;
 
     @ManyToOne

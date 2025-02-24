@@ -1,6 +1,8 @@
 package org.example.coffeservice.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "orderr")
@@ -10,14 +12,17 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Food cannot be null")
     @ManyToOne
     @JoinColumn(name = "food_id")
     private Food food;
 
+    @NotNull(message = "Order details cannot be null")
     @ManyToOne
     @JoinColumn(name = "order_details_id")
     private OrderDetails orderDetails;
 
+    @Min(value = 1, message = "Quantity must be at least 1")
     private int quantity;
 
     public Order() {}

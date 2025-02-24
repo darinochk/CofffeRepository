@@ -1,6 +1,8 @@
 package org.example.coffeservice.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
@@ -11,9 +13,16 @@ public class Promotion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Promotion name cannot be blank")
     private String name;
+
+    @NotBlank(message = "Description cannot be blank")
     private String description;
+
+    @NotNull(message = "Start date cannot be null")
     private Date startDate;
+
+    @NotNull(message = "End date cannot be null")
     private Date endDate;
 
     public Promotion() {}

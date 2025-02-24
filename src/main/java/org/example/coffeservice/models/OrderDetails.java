@@ -1,6 +1,9 @@
 package org.example.coffeservice.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "order_details")
@@ -10,11 +13,14 @@ public class OrderDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Booking cannot be null")
     @ManyToOne
     @JoinColumn(name = "booking_id")
     private Booking booking;
 
     private double amount;
+
+    @NotBlank(message = "Status cannot be blank")
     private String status;
 
     public OrderDetails() {}

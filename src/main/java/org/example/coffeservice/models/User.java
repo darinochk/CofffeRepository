@@ -1,6 +1,9 @@
 package org.example.coffeservice.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "users")
@@ -10,19 +13,27 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "First name cannot be blank")
     private String firstName;
+
+    @NotBlank(message = "Last name cannot be blank")
     private String lastName;
 
+    @NotBlank(message = "Email cannot be blank")
+    @Email(message = "Email should be valid")
     @Column(unique = true, nullable = false)
     private String email;
 
+    @NotBlank(message = "Role cannot be blank")
     @Column(nullable = false)
     private String role;
 
+    @NotBlank(message = "Password cannot be blank")
     private String password;
 
     private String phone;
 
+    @NotNull(message = "Locked flag must not be null")
     private boolean locked;
 
     public User() {
@@ -103,5 +114,4 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-
 }

@@ -1,6 +1,8 @@
 package org.example.coffeservice.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "user_account")
@@ -10,13 +12,14 @@ public class UserAccount {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "User cannot be null")
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Min(value = 0, message = "Balance must be non-negative")
     private double balance;
 
-    // Конструкторы, геттеры и сеттеры
     public UserAccount() {}
 
     public UserAccount(User user, double balance) {

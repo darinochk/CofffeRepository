@@ -1,6 +1,8 @@
 package org.example.coffeservice.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
@@ -11,17 +13,23 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "User cannot be null")
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
+    @NotNull(message = "Desk cannot be null")
     @ManyToOne
     @JoinColumn(name = "desk_id")
     private Desk desk;
 
+    @NotNull(message = "Start date cannot be null")
     private Date startDate;
+
+    @NotNull(message = "End date cannot be null")
     private Date endDate;
 
+    @NotBlank(message = "Status cannot be blank")
     private String status;
 
     public Booking() {}
