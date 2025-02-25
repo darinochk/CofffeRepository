@@ -41,7 +41,7 @@ public class PaymentService {
             throw new IllegalArgumentException("Insufficient funds. Account balance is " + accountBalance);
         }
 
-        Transaction transaction = new Transaction("COMPLETED");
+        Transaction transaction = new Transaction("IN_PROCESS");
         Transaction savedTransaction = transactionRepository.save(transaction);
 
         PaymentSession paymentSession = new PaymentSession();
@@ -55,7 +55,14 @@ public class PaymentService {
 
         paymentSessionRepository.save(paymentSession);
 
+        completeTransaction(savedTransaction);
+
         return paymentSession;
+    }
+
+    private void completeTransaction(Transaction transaction) {
+        transaction.setStatus("COMPLETED");
+        transactionRepository.save(transaction);
     }
 
     private double getMockAccountBalance(String accountNumber) {
