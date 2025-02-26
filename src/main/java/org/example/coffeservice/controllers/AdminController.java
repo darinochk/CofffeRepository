@@ -1,9 +1,6 @@
 package org.example.coffeservice.controllers;
 
-import org.example.coffeservice.dto.response.BookingResponseDTO;
-import org.example.coffeservice.dto.response.DeskResponseDTO;
-import org.example.coffeservice.dto.response.UserResponseDTO;
-import org.example.coffeservice.dto.response.ReviewResponseDTO;
+import org.example.coffeservice.dto.response.*;
 import org.example.coffeservice.models.Review;
 import org.example.coffeservice.models.User;
 import org.example.coffeservice.services.AdminService;
@@ -152,6 +149,18 @@ public class AdminController {
         } catch (Exception e) {
             return handleError("Error moderating review");
         }
+    }
+
+    @PutMapping("/confirmBooking/{id}")
+    @PreAuthorize("hasRole('WAITER')")
+    public BookingResponseDTO confirmBooking(@PathVariable Long id) {
+        return adminService.confirmBooking(id);
+    }
+
+    @PutMapping("/confirmOrderDetails/{orderDetailsId}")
+    @PreAuthorize("hasRole('WAITER')")
+    public OrderDetailsResponseDTO confirmOrderDetails(@PathVariable Long orderDetailsId) {
+        return adminService.confirmOrderDetails(orderDetailsId);
     }
 
     private ResponseEntity<Object> handleError(String message) {
