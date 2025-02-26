@@ -1,6 +1,7 @@
 package org.example.coffeservice.controllers;
 
-import org.example.coffeservice.models.Event;
+import org.example.coffeservice.dto.request.EventRequestDTO;
+import org.example.coffeservice.dto.response.EventResponseDTO;
 import org.example.coffeservice.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,29 +16,29 @@ public class EventController {
     private EventService eventService;
 
     @GetMapping("/")
-    public List<Event> getAllEvents() {
+    public List<EventResponseDTO> getAllEvents() {
         try {
             return eventService.getAllEvents();
         } catch (Exception e) {
-            throw new RuntimeException("Error retrieving events");
+            throw new RuntimeException("Ошибка получения событий", e);
         }
     }
 
     @PostMapping("/create")
-    public Event createEvent(@RequestBody Event event) {
+    public EventResponseDTO createEvent(@RequestBody EventRequestDTO eventRequest) {
         try {
-            return eventService.createEvent(event);
+            return eventService.createEvent(eventRequest);
         } catch (Exception e) {
-            throw new RuntimeException("Error creating event");
+            throw new RuntimeException("Ошибка создания события", e);
         }
     }
 
     @PutMapping("/update/{id}")
-    public Event updateEvent(@PathVariable Long id, @RequestBody Event event) {
+    public EventResponseDTO updateEvent(@PathVariable Long id, @RequestBody EventRequestDTO eventRequest) {
         try {
-            return eventService.updateEvent(id, event);
+            return eventService.updateEvent(id, eventRequest);
         } catch (Exception e) {
-            throw new RuntimeException("Error updating event");
+            throw new RuntimeException("Ошибка обновления события с id " + id, e);
         }
     }
 
@@ -46,7 +47,7 @@ public class EventController {
         try {
             eventService.deleteEvent(id);
         } catch (Exception e) {
-            throw new RuntimeException("Error deleting event");
+            throw new RuntimeException("Ошибка удаления события с id " + id, e);
         }
     }
 }

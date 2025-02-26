@@ -1,6 +1,6 @@
 package org.example.coffeservice.controllers;
 
-import org.example.coffeservice.models.Booking;
+import org.example.coffeservice.dto.response.BookingResponseDTO;
 import org.example.coffeservice.services.WaiterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,7 +15,7 @@ public class WaiterController {
 
     @PutMapping("/confirm/{id}")
     @PreAuthorize("hasRole('WAITER')")
-    public Booking confirmBooking(@PathVariable Long id) {
+    public BookingResponseDTO confirmBooking(@PathVariable Long id) {
         return waiterService.confirmBooking(id);
     }
 }

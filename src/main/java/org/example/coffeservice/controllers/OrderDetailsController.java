@@ -1,5 +1,8 @@
 package org.example.coffeservice.controllers;
 
+import org.example.coffeservice.dto.response.OrderDetailsResponseDTO;
+import org.example.coffeservice.dto.response.OrderResponseDTO;
+import org.example.coffeservice.models.Booking;
 import org.example.coffeservice.models.Order;
 import org.example.coffeservice.models.OrderDetails;
 import org.example.coffeservice.services.OrderService;
@@ -7,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/order-details")
@@ -16,50 +20,38 @@ public class OrderDetailsController {
     private OrderService orderService;
 
     @GetMapping("/confirm_details/{orderDetailsId}")
-    public OrderDetailsResponse confirmDetails(@PathVariable Long orderDetailsId) {
+    public OrderDetailsResponseDTO confirmDetails(@PathVariable Long orderDetailsId) {
         try {
             List<Order> orders = orderService.getOrdersByOrderDetailsId(orderDetailsId);
 
             double totalAmount = 0.0;
+            List<OrderResponseDTO> orderDTOs = orders.stream()
+                    .map(this::convertOrderToDTO)
+                    .collect(Collectors.toList());
+
             for (Order order : orders) {
-                double itemCost = order.getQuantity() * order.getFood().getPrice();
-                totalAmount += itemCost;
+                totalAmount += order.getQuantity() * order.getFood().getPrice();
             }
+
             if (!orders.isEmpty()) {
                 OrderDetails orderDetails = orders.get(0).getOrderDetails();
                 orderDetails.setAmount(totalAmount);
                 orderService.updateOrderDetails(orderDetails);
             }
 
-            return new OrderDetailsResponse(orders, totalAmount);
+            return new OrderDetailsResponseDTO(orderDetailsId, totalAmount, orderDTOs);
         } catch (Exception e) {
-            throw new RuntimeException("Error retrieving or processing order details");
+            throw new RuntimeException("Ошибка получения или обработки деталей заказа", e);
         }
     }
 
-    public static class OrderDetailsResponse {
-        private List<Order> orders;
-        private double totalAmount;
-
-        public OrderDetailsResponse(List<Order> orders, double totalAmount) {
-            this.orders = orders;
-            this.totalAmount = totalAmount;
-        }
-
-        public List<Order> getOrders() {
-            return orders;
-        }
-
-        public void setOrders(List<Order> orders) {
-            this.orders = orders;
-        }
-
-        public double getTotalAmount() {
-            return totalAmount;
-        }
-
-        public void setTotalAmount(double totalAmount) {
-            this.totalAmount = totalAmount;
-        }
+    private OrderResponseDTO convertOrderToDTO(Order order) {
+        return new OrderResponseDTO(
+                order.getId(),
+                order.getFood().getName(),
+                order.getQuantity(),
+                order.getTotalPrice(),
+                order.getOrderDetails().getId()
+        );
     }
 }

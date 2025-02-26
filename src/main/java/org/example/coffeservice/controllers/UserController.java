@@ -1,6 +1,7 @@
 package org.example.coffeservice.controllers;
 
-import org.example.coffeservice.models.User;
+import org.example.coffeservice.dto.request.UserRequestDTO;
+import org.example.coffeservice.dto.response.UserResponseDTO;
 import org.example.coffeservice.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class UserController {
 
     @GetMapping("/")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<User> getAllUsers() {
+    public List<UserResponseDTO> getAllUsers() {
         try {
             return userService.getAllUsers();
         } catch (Exception e) {
@@ -28,7 +29,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public User getUserById(@PathVariable Long id) {
+    public UserResponseDTO getUserById(@PathVariable Long id) {
         try {
             return userService.getUserById(id);
         } catch (Exception e) {
@@ -38,18 +39,18 @@ public class UserController {
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('ADMIN')")
-    public User createUser(@RequestBody User user) {
+    public UserResponseDTO createUser(@RequestBody UserRequestDTO userRequest) {
         try {
-            return userService.createUser(user);
+            return userService.createUser(userRequest);
         } catch (Exception e) {
             throw new RuntimeException("Error creating user");
         }
     }
 
     @PutMapping("/update")
-    public ResponseEntity<User> updateUser(@RequestBody User user) {
+    public ResponseEntity<UserResponseDTO> updateUser(@RequestBody UserRequestDTO userRequest) {
         try {
-            User updatedUser = userService.updateUser(user);
+            UserResponseDTO updatedUser = userService.updateUser(userRequest);
             return ResponseEntity.ok(updatedUser);
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(null);
@@ -72,9 +73,9 @@ public class UserController {
 
     @GetMapping("/search")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<User> searchUsers(@RequestParam(required = false) String name,
-                                  @RequestParam(required = false) String lastname,
-                                  @RequestParam(required = false) String email) {
+    public List<UserResponseDTO> searchUsers(@RequestParam(required = false) String name,
+                                             @RequestParam(required = false) String lastname,
+                                             @RequestParam(required = false) String email) {
         try {
             return userService.searchUsers(name, lastname, email);
         } catch (Exception e) {

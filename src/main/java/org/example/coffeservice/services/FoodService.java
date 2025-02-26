@@ -1,11 +1,14 @@
 package org.example.coffeservice.services;
 
+import org.example.coffeservice.dto.request.FoodRequestDTO;
+import org.example.coffeservice.dto.response.FoodResponseDTO;
 import org.example.coffeservice.models.Food;
 import org.example.coffeservice.repositories.FoodRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FoodService {
@@ -13,33 +16,41 @@ public class FoodService {
     @Autowired
     private FoodRepository foodRepository;
 
-    public List<Food> getAllFood() {
+    public List<FoodResponseDTO> getAllFood() {
         try {
-            return foodRepository.findAll();
+            List<Food> foods = foodRepository.findAll();
+            return foods.stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
-            throw new RuntimeException("Error retrieving food items", e);
+            throw new RuntimeException("Ошибка получения списка блюд", e);
         }
     }
 
-    public Food createFood(Food food) {
+    public FoodResponseDTO createFood(FoodRequestDTO foodRequest) {
         try {
-            return foodRepository.save(food);
+            Food food = new Food();
+            food.setName(foodRequest.getName());
+            food.setPrice(foodRequest.getPrice());
+            food.setFoodType(foodRequest.getFoodType());
+            Food savedFood = foodRepository.save(food);
+            return convertToDTO(savedFood);
         } catch (Exception e) {
-            throw new RuntimeException("Error creating food item", e);
+            throw new RuntimeException("Ошибка создания блюда", e);
         }
     }
 
-    public Food updateFood(Long id, Food food) {
+    public FoodResponseDTO updateFood(Long id, FoodRequestDTO foodRequest) {
         try {
             Food existingFood = foodRepository.findById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("Food not found with id " + id));
-
-            existingFood.setName(food.getName());
-            existingFood.setPrice(food.getPrice());
-            existingFood.setFoodType(food.getFoodType());
-            return foodRepository.save(existingFood);
+                    .orElseThrow(() -> new IllegalArgumentException("Блюдо не найдено с id " + id));
+            existingFood.setName(foodRequest.getName());
+            existingFood.setPrice(foodRequest.getPrice());
+            existingFood.setFoodType(foodRequest.getFoodType());
+            Food updatedFood = foodRepository.save(existingFood);
+            return convertToDTO(updatedFood);
         } catch (Exception e) {
-            throw new RuntimeException("Error updating food item with id " + id, e);
+            throw new RuntimeException("Ошибка обновления блюда с id " + id, e);
         }
     }
 
@@ -47,7 +58,11 @@ public class FoodService {
         try {
             foodRepository.deleteById(id);
         } catch (Exception e) {
-            throw new RuntimeException("Error deleting food item with id " + id, e);
+            throw new RuntimeException("Ошибка удаления блюда с id " + id, e);
         }
+    }
+
+    private FoodResponseDTO convertToDTO(Food food) {
+        return new FoodResponseDTO(food.getId(), food.getName(), food.getPrice(), food.getFoodType());
     }
 }

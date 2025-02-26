@@ -1,6 +1,7 @@
 package org.example.coffeservice.services;
 
 import org.example.coffeservice.models.*;
+import org.example.coffeservice.dto.response.PaymentSessionResponseDTO;
 import org.example.coffeservice.repositories.OrderDetailsRepository;
 import org.example.coffeservice.repositories.BookingRepository;
 import org.example.coffeservice.repositories.PaymentSessionRepository;
@@ -27,7 +28,7 @@ public class PaymentService {
     @Autowired
     private TransactionRepository transactionRepository;
 
-    public PaymentSession processPayment(Long orderDetailsId, String accountNumber) {
+    public PaymentSessionResponseDTO processPayment(Long orderDetailsId, String accountNumber) {
         OrderDetails orderDetails = orderDetailsRepository.findById(orderDetailsId)
                 .orElseThrow(() -> new IllegalArgumentException("Order details not found with id " + orderDetailsId));
 
@@ -57,7 +58,7 @@ public class PaymentService {
 
         completeTransaction(savedTransaction);
 
-        return paymentSession;
+        return convertToDTO(paymentSession);
     }
 
     private void completeTransaction(Transaction transaction) {
@@ -67,5 +68,19 @@ public class PaymentService {
 
     private double getMockAccountBalance(String accountNumber) {
         return 1000.0;
+    }
+
+    private PaymentSessionResponseDTO convertToDTO(PaymentSession session) {
+        Transaction transaction = session.getTransaction();
+        return new PaymentSessionResponseDTO(
+                session.getId(),
+                session.getFullName(),
+                session.getEmail(),
+                session.getDescription(),
+                session.getOrderDate(),
+                session.getAmount(),
+                (transaction != null ? transaction.getId() : null),
+                (transaction != null ? transaction.getStatus() : null)
+        );
     }
 }

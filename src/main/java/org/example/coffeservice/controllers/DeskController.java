@@ -1,6 +1,7 @@
 package org.example.coffeservice.controllers;
 
-import org.example.coffeservice.models.Desk;
+import org.example.coffeservice.dto.request.DeskRequestDTO;
+import org.example.coffeservice.dto.response.DeskResponseDTO;
 import org.example.coffeservice.services.DeskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,31 +17,31 @@ public class DeskController {
     private DeskService deskService;
 
     @GetMapping("/")
-    public List<Desk> getAllDesks() {
+    public List<DeskResponseDTO> getAllDesks() {
         try {
             return deskService.getAllDesks();
         } catch (Exception e) {
-            throw new RuntimeException("Error retrieving desks");
+            throw new RuntimeException("Ошибка получения столов");
         }
     }
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('ADMIN')")
-    public Desk createDesk(@RequestBody Desk desk) {
+    public DeskResponseDTO createDesk(@RequestBody DeskRequestDTO deskRequest) {
         try {
-            return deskService.createDesk(desk);
+            return deskService.createDesk(deskRequest);
         } catch (Exception e) {
-            throw new RuntimeException("Error creating desk");
+            throw new RuntimeException("Ошибка создания стола");
         }
     }
 
     @PutMapping("/update/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public Desk updateDesk(@PathVariable Long id, @RequestBody Desk desk) {
+    public DeskResponseDTO updateDesk(@PathVariable Long id, @RequestBody DeskRequestDTO deskRequest) {
         try {
-            return deskService.updateDesk(id, desk);
+            return deskService.updateDesk(id, deskRequest);
         } catch (Exception e) {
-            throw new RuntimeException("Error updating desk");
+            throw new RuntimeException("Ошибка обновления стола");
         }
     }
 
@@ -50,7 +51,7 @@ public class DeskController {
         try {
             deskService.deleteDesk(id);
         } catch (Exception e) {
-            throw new RuntimeException("Error deleting desk");
+            throw new RuntimeException("Ошибка удаления стола");
         }
     }
 }

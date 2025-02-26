@@ -1,7 +1,9 @@
 package org.example.coffeservice.controllers;
 
-import org.example.coffeservice.models.Booking;
-import org.example.coffeservice.models.Desk;
+import org.example.coffeservice.dto.response.BookingResponseDTO;
+import org.example.coffeservice.dto.response.DeskResponseDTO;
+import org.example.coffeservice.dto.response.UserResponseDTO;
+import org.example.coffeservice.dto.response.ReviewResponseDTO;
 import org.example.coffeservice.models.Review;
 import org.example.coffeservice.models.User;
 import org.example.coffeservice.services.AdminService;
@@ -24,7 +26,7 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> getAllBookings() {
         try {
-            List<Booking> bookings = adminService.getAllBookings();
+            List<BookingResponseDTO> bookings = adminService.getAllBookings();
             return ResponseEntity.ok(bookings);
         } catch (Exception e) {
             return handleError("Error retrieving bookings");
@@ -35,7 +37,7 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> getAllDesks() {
         try {
-            List<Desk> desks = adminService.getAllDesks();
+            List<DeskResponseDTO> desks = adminService.getAllDesks();
             return ResponseEntity.ok(desks);
         } catch (Exception e) {
             return handleError("Error retrieving desks");
@@ -46,7 +48,7 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> getAllUsers() {
         try {
-            List<User> users = adminService.getAllUsers();
+            List<UserResponseDTO> users = adminService.getAllUsers();
             return ResponseEntity.ok(users);
         } catch (Exception e) {
             return handleError("Error retrieving users");
@@ -90,7 +92,7 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> addUser(@RequestBody User user) {
         try {
-            User newUser = adminService.addUser(user);
+            UserResponseDTO newUser = adminService.addUser(user);
             return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
         } catch (Exception e) {
             return handleError("Error adding user");
@@ -101,7 +103,7 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> updateUser(@PathVariable Long id, @RequestBody User user) {
         try {
-            User updatedUser = adminService.updateUser(id, user);
+            UserResponseDTO updatedUser = adminService.updateUser(id, user);
             return ResponseEntity.ok(updatedUser);
         } catch (Exception e) {
             return handleError("Error updating user");
@@ -112,7 +114,7 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> assignRoleToUser(@PathVariable Long userId, @RequestParam String role) {
         try {
-            User updatedUser = adminService.assignRoleToUser(userId, role);
+            UserResponseDTO updatedUser = adminService.assignRoleToUser(userId, role);
             return ResponseEntity.ok(updatedUser);
         } catch (Exception e) {
             return handleError("Error assigning role");
@@ -123,8 +125,8 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> blockUser(@PathVariable Long id) {
         try {
-            adminService.blockUser(id);
-            return ResponseEntity.ok("User blocked successfully");
+            UserResponseDTO updatedUser = adminService.blockUser(id);
+            return ResponseEntity.ok(updatedUser);
         } catch (Exception e) {
             return handleError("Error blocking user");
         }
@@ -134,8 +136,8 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> unblockUser(@PathVariable Long id) {
         try {
-            adminService.unblockUser(id);
-            return ResponseEntity.ok("User unblocked successfully");
+            UserResponseDTO updatedUser = adminService.unblockUser(id);
+            return ResponseEntity.ok(updatedUser);
         } catch (Exception e) {
             return handleError("Error unblocking user");
         }
@@ -145,7 +147,7 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> moderateReview(@PathVariable Long reviewId, @RequestParam String newText) {
         try {
-            Review updatedReview = adminService.moderateReview(reviewId, newText);
+            ReviewResponseDTO updatedReview = adminService.moderateReview(reviewId, newText);
             return ResponseEntity.ok(updatedReview);
         } catch (Exception e) {
             return handleError("Error moderating review");

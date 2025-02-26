@@ -1,6 +1,7 @@
 package org.example.coffeservice.controllers;
 
-import org.example.coffeservice.models.Order;
+import org.example.coffeservice.dto.request.OrderRequestDTO;
+import org.example.coffeservice.dto.response.OrderResponseDTO;
 import org.example.coffeservice.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,29 +18,29 @@ public class OrderController {
 
     @GetMapping("/")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<Order> getAllOrders() {
+    public List<OrderResponseDTO> getAllOrders() {
         try {
             return orderService.getAllOrders();
         } catch (Exception e) {
-            throw new RuntimeException("Error retrieving orders");
+            throw new RuntimeException("Ошибка получения заказов", e);
         }
     }
 
     @PostMapping("/create")
-    public Order createOrder(@RequestBody Order order) {
+    public OrderResponseDTO createOrder(@RequestBody OrderRequestDTO orderRequest) {
         try {
-            return orderService.createOrder(order);
+            return orderService.createOrder(orderRequest);
         } catch (Exception e) {
-            throw new RuntimeException("Error creating order");
+            throw new RuntimeException("Ошибка создания заказа", e);
         }
     }
 
     @PutMapping("/update/{id}")
-    public Order updateOrder(@PathVariable Long id, @RequestBody Order order) {
+    public OrderResponseDTO updateOrder(@PathVariable Long id, @RequestBody OrderRequestDTO orderRequest) {
         try {
-            return orderService.updateOrder(id, order);
+            return orderService.updateOrder(id, orderRequest);
         } catch (Exception e) {
-            throw new RuntimeException("Error updating order");
+            throw new RuntimeException("Ошибка обновления заказа", e);
         }
     }
 
@@ -48,7 +49,7 @@ public class OrderController {
         try {
             orderService.deleteOrder(id);
         } catch (Exception e) {
-            throw new RuntimeException("Error deleting order");
+            throw new RuntimeException("Ошибка удаления заказа", e);
         }
     }
 }

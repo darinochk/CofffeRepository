@@ -1,48 +1,65 @@
 package org.example.coffeservice.services;
 
+import org.example.coffeservice.dto.request.UserRequestDTO;
+import org.example.coffeservice.dto.response.UserResponseDTO;
 import org.example.coffeservice.models.User;
 import org.example.coffeservice.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.core.userdetails.User.UserBuilder;
+import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-public class UserService implements org.springframework.security.core.userdetails.UserDetailsService {
+public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
 
-    public List<User> getAllUsers() {
+    public List<UserResponseDTO> getAllUsers() {
         try {
-            return userRepository.findAll();
+            List<User> users = userRepository.findAll();
+            return users.stream()
+                    .map(this::convertToResponseDTO)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             throw new RuntimeException("Error retrieving all users", e);
         }
     }
 
-    public User getUserById(Long id) {
+    public UserResponseDTO getUserById(Long id) {
         try {
-            return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found with id " + id));
+            User user = userRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found with id " + id));
+            return convertToResponseDTO(user);
         } catch (Exception e) {
             throw new RuntimeException("Error retrieving user by id " + id, e);
         }
     }
 
-    public User createUser(User user) {
+    public UserResponseDTO createUser(UserRequestDTO userRequest) {
         try {
-            return userRepository.save(user);
+            User user = new User();
+            user.setFirstName(userRequest.getFirstName());
+            user.setLastName(userRequest.getLastName());
+            user.setEmail(userRequest.getEmail());
+            user.setPassword(userRequest.getPassword());
+            user.setPhone(userRequest.getPhone());
+            user.setLocked(userRequest.isLocked());
+            // Если роль не задана, по умолчанию VISITOR
+            user.setRole(userRequest.getRole() != null ? userRequest.getRole() : "VISITOR");
+
+            User savedUser = userRepository.save(user);
+            return convertToResponseDTO(savedUser);
         } catch (Exception e) {
             throw new RuntimeException("Error creating user", e);
         }
     }
 
-    public User updateUser(User user) {
+    public UserResponseDTO updateUser(UserRequestDTO userRequest) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String email = authentication.getName();
@@ -52,11 +69,12 @@ public class UserService implements org.springframework.security.core.userdetail
                 throw new IllegalArgumentException("User not found");
             }
 
-            currentUser.setFirstName(user.getFirstName());
-            currentUser.setLastName(user.getLastName());
-            currentUser.setPhone(user.getPhone());
+            currentUser.setFirstName(userRequest.getFirstName());
+            currentUser.setLastName(userRequest.getLastName());
+            currentUser.setPhone(userRequest.getPhone());
 
-            return userRepository.save(currentUser);
+            User updatedUser = userRepository.save(currentUser);
+            return convertToResponseDTO(updatedUser);
         } catch (Exception e) {
             throw new RuntimeException("Error updating user", e);
         }
@@ -82,9 +100,12 @@ public class UserService implements org.springframework.security.core.userdetail
         }
     }
 
-    public List<User> searchUsers(String name, String lastname, String email) {
+    public List<UserResponseDTO> searchUsers(String name, String lastname, String email) {
         try {
-            return userRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(name, lastname, email);
+            List<User> users = userRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(name, lastname, email);
+            return users.stream()
+                    .map(this::convertToResponseDTO)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             throw new RuntimeException("Error searching for users", e);
         }
@@ -96,17 +117,27 @@ public class UserService implements org.springframework.security.core.userdetail
             User appUser = userRepository.findByEmail(email);
 
             if (appUser != null) {
-                var springUser = org.springframework.security.core.userdetails.User.withUsername(appUser.getEmail())
+                return org.springframework.security.core.userdetails.User.withUsername(appUser.getEmail())
                         .password(appUser.getPassword())
                         .roles(appUser.getRole())
                         .build();
-
-                return springUser;
             }
 
             throw new UsernameNotFoundException("User not found with email " + email);
         } catch (Exception e) {
             throw new RuntimeException("Error loading user by username", e);
         }
+    }
+
+    private UserResponseDTO convertToResponseDTO(User user) {
+        return new UserResponseDTO(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getPhone(),
+                user.getRole(),
+                user.isLocked()
+        );
     }
 }

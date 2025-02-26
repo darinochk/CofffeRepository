@@ -1,11 +1,14 @@
 package org.example.coffeservice.services;
 
+import org.example.coffeservice.dto.request.DeskRequestDTO;
+import org.example.coffeservice.dto.response.DeskResponseDTO;
 import org.example.coffeservice.models.Desk;
 import org.example.coffeservice.repositories.DeskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DeskService {
@@ -13,32 +16,41 @@ public class DeskService {
     @Autowired
     private DeskRepository deskRepository;
 
-    public List<Desk> getAllDesks() {
+    public List<DeskResponseDTO> getAllDesks() {
         try {
-            return deskRepository.findAll();
+            List<Desk> desks = deskRepository.findAll();
+            return desks.stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
-            throw new RuntimeException("Error retrieving desks", e);
+            throw new RuntimeException("Ошибка получения столов", e);
         }
     }
 
-    public Desk createDesk(Desk desk) {
+    public DeskResponseDTO createDesk(DeskRequestDTO deskRequest) {
         try {
-            return deskRepository.save(desk);
+            Desk desk = new Desk();
+            desk.setDeskNumber(deskRequest.getDeskNumber());
+            desk.setCapacity(deskRequest.getCapacity());
+            desk.setLocation(deskRequest.getLocation());
+            Desk savedDesk = deskRepository.save(desk);
+            return convertToDTO(savedDesk);
         } catch (Exception e) {
-            throw new RuntimeException("Error creating desk", e);
+            throw new RuntimeException("Ошибка создания стола", e);
         }
     }
 
-    public Desk updateDesk(Long id, Desk desk) {
+    public DeskResponseDTO updateDesk(Long id, DeskRequestDTO deskRequest) {
         try {
             Desk existingDesk = deskRepository.findById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("Desk not found with id " + id));
-            existingDesk.setDeskNumber(desk.getDeskNumber());
-            existingDesk.setCapacity(desk.getCapacity());
-            existingDesk.setLocation(desk.getLocation());
-            return deskRepository.save(existingDesk);
+                    .orElseThrow(() -> new IllegalArgumentException("Стол не найден с id " + id));
+            existingDesk.setDeskNumber(deskRequest.getDeskNumber());
+            existingDesk.setCapacity(deskRequest.getCapacity());
+            existingDesk.setLocation(deskRequest.getLocation());
+            Desk updatedDesk = deskRepository.save(existingDesk);
+            return convertToDTO(updatedDesk);
         } catch (Exception e) {
-            throw new RuntimeException("Error updating desk with id " + id, e);
+            throw new RuntimeException("Ошибка обновления стола с id " + id, e);
         }
     }
 
@@ -46,7 +58,11 @@ public class DeskService {
         try {
             deskRepository.deleteById(id);
         } catch (Exception e) {
-            throw new RuntimeException("Error deleting desk with id " + id, e);
+            throw new RuntimeException("Ошибка удаления стола с id " + id, e);
         }
+    }
+
+    public DeskResponseDTO convertToDTO(Desk desk) {
+        return new DeskResponseDTO(desk.getId(), desk.getDeskNumber(), desk.getCapacity(), desk.getLocation());
     }
 }

@@ -1,5 +1,9 @@
 package org.example.coffeservice.services;
 
+import org.example.coffeservice.dto.response.BookingResponseDTO;
+import org.example.coffeservice.dto.response.DeskResponseDTO;
+import org.example.coffeservice.dto.response.UserResponseDTO;
+import org.example.coffeservice.dto.response.ReviewResponseDTO;
 import org.example.coffeservice.models.Booking;
 import org.example.coffeservice.models.Desk;
 import org.example.coffeservice.models.Review;
@@ -12,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminService {
@@ -28,25 +33,34 @@ public class AdminService {
     @Autowired
     private ReviewRepository reviewRepository;
 
-    public List<Booking> getAllBookings() {
+    public List<BookingResponseDTO> getAllBookings() {
         try {
-            return bookingRepository.findAll();
+            List<Booking> bookings = bookingRepository.findAll();
+            return bookings.stream()
+                    .map(this::convertBookingToDTO)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             throw new RuntimeException("Error retrieving all bookings", e);
         }
     }
 
-    public List<Desk> getAllDesks() {
+    public List<DeskResponseDTO> getAllDesks() {
         try {
-            return deskRepository.findAll();
+            List<Desk> desks = deskRepository.findAll();
+            return desks.stream()
+                    .map(this::convertDeskToDTO)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             throw new RuntimeException("Error retrieving all desks", e);
         }
     }
 
-    public List<User> getAllUsers() {
+    public List<UserResponseDTO> getAllUsers() {
         try {
-            return userRepository.findAll();
+            List<User> users = userRepository.findAll();
+            return users.stream()
+                    .map(this::convertUserToDTO)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             throw new RuntimeException("Error retrieving all users", e);
         }
@@ -76,76 +90,99 @@ public class AdminService {
         }
     }
 
-    public User addUser(User user) {
+    public UserResponseDTO addUser(User user) {
         try {
             user.setRole("VISITOR");
-            return userRepository.save(user);
+            User savedUser = userRepository.save(user);
+            return convertUserToDTO(savedUser);
         } catch (Exception e) {
             throw new RuntimeException("Error adding new user", e);
         }
     }
 
-    public User updateUser(Long id, User user) {
+    public UserResponseDTO updateUser(Long id, User user) {
         try {
             User existingUser = userRepository.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("User not found with id " + id));
-
             existingUser.setFirstName(user.getFirstName());
             existingUser.setLastName(user.getLastName());
             existingUser.setPhone(user.getPhone());
-            return userRepository.save(existingUser);
+            User updatedUser = userRepository.save(existingUser);
+            return convertUserToDTO(updatedUser);
         } catch (Exception e) {
             throw new RuntimeException("Error updating user with id " + id, e);
         }
     }
 
-    public User assignRoleToUser(Long userId, String role) {
+    public UserResponseDTO assignRoleToUser(Long userId, String role) {
         try {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new IllegalArgumentException("User not found with id " + userId));
-
             if (!role.equals("VISITOR") && !role.equals("ADMIN") && !role.equals("WAITER")) {
                 throw new IllegalArgumentException("Invalid role: " + role);
             }
-
             user.setRole(role);
-            return userRepository.save(user);
+            User updatedUser = userRepository.save(user);
+            return convertUserToDTO(updatedUser);
         } catch (Exception e) {
             throw new RuntimeException("Error assigning role to user with id " + userId, e);
         }
     }
 
-    public User blockUser(Long id) {
+    public UserResponseDTO blockUser(Long id) {
         try {
             User user = userRepository.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("User not found with id " + id));
             user.setLocked(true);
-            return userRepository.save(user);
+            User updatedUser = userRepository.save(user);
+            return convertUserToDTO(updatedUser);
         } catch (Exception e) {
             throw new RuntimeException("Error blocking user with id " + id, e);
         }
     }
 
-    public User unblockUser(Long id) {
+    public UserResponseDTO unblockUser(Long id) {
         try {
             User user = userRepository.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("User not found with id " + id));
             user.setLocked(false);
-            return userRepository.save(user);
+            User updatedUser = userRepository.save(user);
+            return convertUserToDTO(updatedUser);
         } catch (Exception e) {
             throw new RuntimeException("Error unblocking user with id " + id, e);
         }
     }
 
-    public Review moderateReview(Long reviewId, String newText) {
+    public ReviewResponseDTO moderateReview(Long reviewId, String newText) {
         try {
             Review review = reviewRepository.findById(reviewId)
                     .orElseThrow(() -> new IllegalArgumentException("Review not found with id " + reviewId));
-
             review.setReviewText(newText);
-            return reviewRepository.save(review);
+            Review updatedReview = reviewRepository.save(review);
+            return convertReviewToDTO(updatedReview);
         } catch (Exception e) {
             throw new RuntimeException("Error moderating review with id " + reviewId, e);
         }
+    }
+
+    private BookingResponseDTO convertBookingToDTO(Booking booking) {
+        String userName = booking.getUser().getFirstName() + " " + booking.getUser().getLastName();
+        String deskLocation = booking.getDesk().getLocation();
+        return new BookingResponseDTO(booking.getId(), userName, deskLocation,
+                booking.getStartDate(), booking.getEndDate(), booking.getStatus());
+    }
+
+    private DeskResponseDTO convertDeskToDTO(Desk desk) {
+        return new DeskResponseDTO(desk.getId(), desk.getDeskNumber(), desk.getCapacity(), desk.getLocation());
+    }
+
+    private UserResponseDTO convertUserToDTO(User user) {
+        return new UserResponseDTO(user.getId(), user.getFirstName(), user.getLastName(),
+                user.getEmail(), user.getPhone(), user.getRole(), user.isLocked());
+    }
+
+    private ReviewResponseDTO convertReviewToDTO(Review review) {
+        String userName = review.getUser().getFirstName() + " " + review.getUser().getLastName();
+        return new ReviewResponseDTO(review.getId(), userName, review.getRating(), review.getReviewText(), review.getReviewDate());
     }
 }

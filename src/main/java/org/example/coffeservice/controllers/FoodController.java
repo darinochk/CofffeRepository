@@ -1,6 +1,7 @@
 package org.example.coffeservice.controllers;
 
-import org.example.coffeservice.models.Food;
+import org.example.coffeservice.dto.request.FoodRequestDTO;
+import org.example.coffeservice.dto.response.FoodResponseDTO;
 import org.example.coffeservice.services.FoodService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,31 +17,31 @@ public class FoodController {
     private FoodService foodService;
 
     @GetMapping("/")
-    public List<Food> getAllFood() {
+    public List<FoodResponseDTO> getAllFood() {
         try {
             return foodService.getAllFood();
         } catch (Exception e) {
-            throw new RuntimeException("Error retrieving food items");
+            throw new RuntimeException("Ошибка получения списка блюд", e);
         }
     }
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('ADMIN')")
-    public Food createFood(@RequestBody Food food) {
+    public FoodResponseDTO createFood(@RequestBody FoodRequestDTO foodRequest) {
         try {
-            return foodService.createFood(food);
+            return foodService.createFood(foodRequest);
         } catch (Exception e) {
-            throw new RuntimeException("Error creating food item");
+            throw new RuntimeException("Ошибка создания блюда", e);
         }
     }
 
     @PutMapping("/update/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public Food updateFood(@PathVariable Long id, @RequestBody Food food) {
+    public FoodResponseDTO updateFood(@PathVariable Long id, @RequestBody FoodRequestDTO foodRequest) {
         try {
-            return foodService.updateFood(id, food);
+            return foodService.updateFood(id, foodRequest);
         } catch (Exception e) {
-            throw new RuntimeException("Error updating food item");
+            throw new RuntimeException("Ошибка обновления блюда", e);
         }
     }
 
@@ -50,7 +51,7 @@ public class FoodController {
         try {
             foodService.deleteFood(id);
         } catch (Exception e) {
-            throw new RuntimeException("Error deleting food item");
+            throw new RuntimeException("Ошибка удаления блюда", e);
         }
     }
 }

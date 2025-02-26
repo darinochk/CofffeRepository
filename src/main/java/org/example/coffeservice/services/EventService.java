@@ -1,11 +1,14 @@
 package org.example.coffeservice.services;
 
+import org.example.coffeservice.dto.request.EventRequestDTO;
+import org.example.coffeservice.dto.response.EventResponseDTO;
 import org.example.coffeservice.models.Event;
 import org.example.coffeservice.repositories.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EventService {
@@ -13,34 +16,43 @@ public class EventService {
     @Autowired
     private EventRepository eventRepository;
 
-    public List<Event> getAllEvents() {
+    public List<EventResponseDTO> getAllEvents() {
         try {
-            return eventRepository.findAll();
+            List<Event> events = eventRepository.findAll();
+            return events.stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
-            throw new RuntimeException("Error retrieving events", e);
+            throw new RuntimeException("Ошибка получения событий", e);
         }
     }
 
-    public Event createEvent(Event event) {
+    public EventResponseDTO createEvent(EventRequestDTO eventRequest) {
         try {
-            return eventRepository.save(event);
+            Event event = new Event();
+            event.setName(eventRequest.getName());
+            event.setDescription(eventRequest.getDescription());
+            event.setStartDate(eventRequest.getStartDate());
+            event.setEndDate(eventRequest.getEndDate());
+            Event savedEvent = eventRepository.save(event);
+            return convertToDTO(savedEvent);
         } catch (Exception e) {
-            throw new RuntimeException("Error creating event", e);
+            throw new RuntimeException("Ошибка создания события", e);
         }
     }
 
-    public Event updateEvent(Long id, Event event) {
+    public EventResponseDTO updateEvent(Long id, EventRequestDTO eventRequest) {
         try {
             Event existingEvent = eventRepository.findById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("Event not found with id " + id));
-
-            existingEvent.setName(event.getName());
-            existingEvent.setDescription(event.getDescription());
-            existingEvent.setStartDate(event.getStartDate());
-            existingEvent.setEndDate(event.getEndDate());
-            return eventRepository.save(existingEvent);
+                    .orElseThrow(() -> new IllegalArgumentException("Событие не найдено с id " + id));
+            existingEvent.setName(eventRequest.getName());
+            existingEvent.setDescription(eventRequest.getDescription());
+            existingEvent.setStartDate(eventRequest.getStartDate());
+            existingEvent.setEndDate(eventRequest.getEndDate());
+            Event updatedEvent = eventRepository.save(existingEvent);
+            return convertToDTO(updatedEvent);
         } catch (Exception e) {
-            throw new RuntimeException("Error updating event with id " + id, e);
+            throw new RuntimeException("Ошибка обновления события с id " + id, e);
         }
     }
 
@@ -48,7 +60,17 @@ public class EventService {
         try {
             eventRepository.deleteById(id);
         } catch (Exception e) {
-            throw new RuntimeException("Error deleting event with id " + id, e);
+            throw new RuntimeException("Ошибка удаления события с id " + id, e);
         }
+    }
+
+    public EventResponseDTO convertToDTO(Event event) {
+        return new EventResponseDTO(
+                event.getId(),
+                event.getName(),
+                event.getDescription(),
+                event.getStartDate(),
+                event.getEndDate()
+        );
     }
 }
