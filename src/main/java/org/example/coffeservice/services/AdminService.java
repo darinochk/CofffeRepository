@@ -1,17 +1,8 @@
 package org.example.coffeservice.services;
 
-import org.example.coffeservice.dto.response.BookingResponseDTO;
-import org.example.coffeservice.dto.response.DeskResponseDTO;
-import org.example.coffeservice.dto.response.UserResponseDTO;
-import org.example.coffeservice.dto.response.ReviewResponseDTO;
-import org.example.coffeservice.models.Booking;
-import org.example.coffeservice.models.Desk;
-import org.example.coffeservice.models.Review;
-import org.example.coffeservice.models.User;
-import org.example.coffeservice.repositories.BookingRepository;
-import org.example.coffeservice.repositories.DeskRepository;
-import org.example.coffeservice.repositories.ReviewRepository;
-import org.example.coffeservice.repositories.UserRepository;
+import org.example.coffeservice.dto.response.*;
+import org.example.coffeservice.models.*;
+import org.example.coffeservice.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +23,12 @@ public class AdminService {
 
     @Autowired
     private ReviewRepository reviewRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private OrderDetailsRepository orderDetailsRepository;
 
     public List<BookingResponseDTO> getAllBookings() {
         try {
@@ -165,6 +162,35 @@ public class AdminService {
         }
     }
 
+    public BookingResponseDTO confirmBooking(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new IllegalArgumentException("Booking not found with id " + bookingId));
+
+        booking.setStatus("CONFIRMED");
+        Booking savedBooking = bookingRepository.save(booking);
+
+        return convertToDTO(savedBooking);
+    }
+
+    public OrderDetailsResponseDTO confirmOrderDetails(Long orderDetailsId) {
+        OrderDetails orderDetails = orderDetailsRepository.findById(orderDetailsId)
+                .orElseThrow(() -> new IllegalArgumentException("OrderDetails not found with id " + orderDetailsId));
+        orderDetails.setStatus("CONFIRMED");
+
+        List<Order> orders = orderRepository.findByOrderDetailsId(orderDetailsId);
+        double totalAmount = orders.stream()
+                .mapToDouble(order -> order.getQuantity() * order.getFood().getPrice())
+                .sum();
+        orderDetails.setAmount(totalAmount);
+        OrderDetails savedDetails = orderDetailsRepository.save(orderDetails);
+
+        List<OrderResponseDTO> orderDTOs = orders.stream()
+                .map(this::convertToOrderResponseDTO)
+                .collect(Collectors.toList());
+
+        return new OrderDetailsResponseDTO(savedDetails.getId(), savedDetails.getAmount(), orderDTOs);
+    }
+
     private BookingResponseDTO convertBookingToDTO(Booking booking) {
         String userName = booking.getUser().getFirstName() + " " + booking.getUser().getLastName();
         String deskLocation = booking.getDesk().getLocation();
@@ -184,5 +210,28 @@ public class AdminService {
     private ReviewResponseDTO convertReviewToDTO(Review review) {
         String userName = review.getUser().getFirstName() + " " + review.getUser().getLastName();
         return new ReviewResponseDTO(review.getId(), userName, review.getRating(), review.getReviewText(), review.getReviewDate());
+    }
+
+    private OrderResponseDTO convertToOrderResponseDTO(Order order) {
+        return new OrderResponseDTO(
+                order.getId(),
+                order.getFood().getName(),
+                order.getQuantity(),
+                order.getTotalPrice(),
+                order.getOrderDetails().getId()
+        );
+    }
+
+    private BookingResponseDTO convertToDTO(Booking booking) {
+        String userName = booking.getUser().getFirstName() + " " + booking.getUser().getLastName();
+        String deskLocation = booking.getDesk().getLocation();
+        return new BookingResponseDTO(
+                booking.getId(),
+                userName,
+                deskLocation,
+                booking.getStartDate(),
+                booking.getEndDate(),
+                booking.getStatus()
+        );
     }
 }
