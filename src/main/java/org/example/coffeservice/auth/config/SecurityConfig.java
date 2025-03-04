@@ -37,12 +37,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/account", "/account/login", "/account/register").permitAll()
-//                        .requestMatchers("/admin/**").hasRole("ADMIN")
-//                        .requestMatchers("/bookings/").hasRole("ADMIN")
-//                        .requestMatchers("/desks/create", "/desks/update/**", "/desks/delete/**").hasRole("ADMIN")
-//                        .requestMatchers("/users", "/users/{id}", "/users/search").hasRole("ADMIN")
-//                        .requestMatchers("/food/create", "/food/update/**", "/food/delete/**").hasRole("ADMIN")
-                        .anyRequest().authenticated() // (2)
+                        .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

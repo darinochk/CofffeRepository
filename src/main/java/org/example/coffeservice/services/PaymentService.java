@@ -28,21 +28,14 @@ public class PaymentService {
     @Autowired
     private TransactionRepository transactionRepository;
 
-    public PaymentSessionResponseDTO processPayment(Long orderDetailsId, String accountNumber) {
+    public PaymentSession initPaymentSession(Long orderDetailsId) {
         OrderDetails orderDetails = orderDetailsRepository.findById(orderDetailsId)
                 .orElseThrow(() -> new IllegalArgumentException("Order details not found with id " + orderDetailsId));
 
         Booking booking = bookingRepository.findById(orderDetails.getBooking().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Booking not found for order details id " + orderDetailsId));
 
-        double orderAmount = orderDetails.getAmount();
-        double accountBalance = getMockAccountBalance(accountNumber);
-
-        if (accountBalance < orderAmount) {
-            throw new IllegalArgumentException("Insufficient funds. Account balance is " + accountBalance);
-        }
-
-        Transaction transaction = new Transaction("IN_PROCESS");
+        Transaction transaction = new Transaction("NEW");
         Transaction savedTransaction = transactionRepository.save(transaction);
 
         PaymentSession paymentSession = new PaymentSession();
@@ -51,19 +44,62 @@ public class PaymentService {
         paymentSession.setEmail(user.getEmail());
         paymentSession.setDescription("Payment for order details id " + orderDetailsId);
         paymentSession.setOrderDate(booking.getStartDate());
-        paymentSession.setAmount(orderAmount);
+        paymentSession.setAmount(orderDetails.getAmount());
         paymentSession.setTransaction(savedTransaction);
 
-        paymentSessionRepository.save(paymentSession);
-
-        completeTransaction(savedTransaction);
-
-        return convertToDTO(paymentSession);
+        return paymentSessionRepository.save(paymentSession);
     }
 
-    private void completeTransaction(Transaction transaction) {
-        transaction.setStatus("COMPLETED");
+    public PaymentSession processPayment(Long paymentSessionId, String accountNumber) {
+        PaymentSession paymentSession = paymentSessionRepository.findById(paymentSessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Payment session not found with id " + paymentSessionId));
+
+        Transaction transaction = paymentSession.getTransaction();
+        double orderAmount = paymentSession.getAmount();
+        double accountBalance = getMockAccountBalance(accountNumber);
+
+        if (accountBalance >= orderAmount) {
+            transaction.setStatus("SUCCESS");
+        } else {
+            transaction.setStatus("FAIL");
+        }
         transactionRepository.save(transaction);
+
+        return paymentSession;
+    }
+
+    public PaymentSession processPartialPayment(Long paymentSessionId, String accountNumber, int totalInstallments) {
+        PaymentSession paymentSession = paymentSessionRepository.findById(paymentSessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Payment session not found with id " + paymentSessionId));
+
+        Transaction transaction = paymentSession.getTransaction();
+        if (paymentSession.getInstallments() == 0) {
+            paymentSession.setInstallments(totalInstallments);
+            paymentSession.setRemainingInstallments(totalInstallments);
+        }
+
+        if (paymentSession.getRemainingInstallments() <= 0) {
+            throw new IllegalStateException("All installments have already been paid.");
+        }
+
+        double installmentAmount = paymentSession.getAmount() / paymentSession.getInstallments();
+        double accountBalance = getMockAccountBalance(accountNumber);
+
+        if (accountBalance >= installmentAmount) {
+            paymentSession.setRemainingInstallments(paymentSession.getRemainingInstallments() - 1);
+            if (paymentSession.getRemainingInstallments() == 0) {
+                transaction.setStatus("SUCCESS");
+            } else {
+                transaction.setStatus("IN_PROGRESS");
+            }
+        } else {
+            transaction.setStatus("FAIL");
+        }
+
+        transactionRepository.save(transaction);
+        paymentSessionRepository.save(paymentSession);
+
+        return paymentSession;
     }
 
     private double getMockAccountBalance(String accountNumber) {

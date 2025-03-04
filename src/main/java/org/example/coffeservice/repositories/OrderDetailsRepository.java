@@ -7,6 +7,5 @@ import java.util.List;
 
 public interface OrderDetailsRepository extends JpaRepository<OrderDetails, Long> {
 
-    // Поиск всех позиций для конкретного заказа
-//    List<OrderDetails> findByOrderId(Long orderId);  // Поиск по order_id
+
 }

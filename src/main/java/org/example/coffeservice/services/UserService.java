@@ -49,7 +49,6 @@ public class UserService implements UserDetailsService {
             user.setPassword(userRequest.getPassword());
             user.setPhone(userRequest.getPhone());
             user.setLocked(userRequest.isLocked());
-            // Если роль не задана, по умолчанию VISITOR
             user.setRole(userRequest.getRole() != null ? userRequest.getRole() : "VISITOR");
 
             User savedUser = userRepository.save(user);

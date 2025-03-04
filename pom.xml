@@ -36,12 +36,12 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.postgresql/postgresql &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.postgresql</groupId>-->
-<!--            <artifactId>postgresql</artifactId>-->
-<!--            <version>42.5.4</version>-->
-<!--        </dependency>-->
+        <!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.postgresql/postgresql &ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.postgresql</groupId>-->
+        <!--            <artifactId>postgresql</artifactId>-->
+        <!--            <version>42.5.4</version>-->
+        <!--        </dependency>-->
 
 
         <!-- Spring Boot Starter Data JPA for database interactions -->
@@ -129,11 +129,11 @@
 
 
         <!-- Google API Client for Google Calendar Integration -->
-<!--        <dependency>-->
-<!--            <groupId>com.google.apis</groupId>-->
-<!--            <artifactId>google-api-java-client</artifactId>-->
-<!--            <version>1.31.5</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.google.apis</groupId>-->
+        <!--            <artifactId>google-api-java-client</artifactId>-->
+        <!--            <version>1.31.5</version>-->
+        <!--        </dependency>-->
 
         <!-- Spring Boot Starter Test for unit testing -->
         <dependency>

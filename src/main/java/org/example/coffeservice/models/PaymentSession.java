@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.util.Date;
 
+
 @Entity
 @Table(name = "payment_session")
 public class PaymentSession {
@@ -30,6 +31,9 @@ public class PaymentSession {
     @ManyToOne
     @JoinColumn(name = "transaction_id")
     private Transaction transaction;
+
+    private int installments = 0;
+    private int remainingInstallments = 0;
 
     public PaymentSession() {}
 
@@ -96,5 +100,21 @@ public class PaymentSession {
 
     public void setTransaction(Transaction transaction) {
         this.transaction = transaction;
+    }
+
+    public int getInstallments() {
+        return installments;
+    }
+
+    public void setInstallments(int installments) {
+        this.installments = installments;
+    }
+
+    public int getRemainingInstallments() {
+        return remainingInstallments;
+    }
+
+    public void setRemainingInstallments(int remainingInstallments) {
+        this.remainingInstallments = remainingInstallments;
     }
 }
