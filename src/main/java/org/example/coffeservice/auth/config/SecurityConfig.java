@@ -19,9 +19,6 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.cors.CorsConfiguration;
-
-import java.util.List;
 
 import javax.crypto.spec.SecretKeySpec;
 
@@ -33,25 +30,10 @@ public class SecurityConfig {
     @Value("${security.jwt.secret-key}")
     private String jwtSecretKey;
 
-    @Value("${security.client-origin}")
-    private String clientOrigin; // добавьте этот параметр в application.properties или application.yml
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .cors(cors -> cors.configurationSource(request -> {
-                    var corsConfiguration = new CorsConfiguration();
-                    corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5000", clientOrigin));
-                    corsConfiguration.setAllowedMethods(List.of(
-                            "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD", "CONNECT", "OPTIONS")
-                    );
-                    corsConfiguration.setAllowedHeaders(List.of("*"));
-                    corsConfiguration.setAllowCredentials(true);
-                    corsConfiguration.setMaxAge(10L);
-                    corsConfiguration.addExposedHeader("X-Response-Uuid");
-                    corsConfiguration.addExposedHeader("X-Total-Count");
-                    return corsConfiguration;
-                }))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/account", "/account/login", "/account/register").permitAll()
@@ -77,5 +59,18 @@ public class SecurityConfig {
         provider.setPasswordEncoder(new BCryptPasswordEncoder());
 
         return new ProviderManager(provider);
+    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry cors) {
+                cors.addMapping("/**")
+                        .allowedOrigins(clientOrigin)
+                        .allowedMethods("*")
+                        .maxAge(3600);
+            }
+        };
     }
 }
