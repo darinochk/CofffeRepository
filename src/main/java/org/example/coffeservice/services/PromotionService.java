@@ -1,8 +1,8 @@
 package org.example.coffeservice.services;
 
-import org.example.coffeservice.dto.request.PromotionRequestDTO;
-import org.example.coffeservice.dto.response.PromotionResponseDTO;
-import org.example.coffeservice.models.Promotion;
+import org.example.coffeservice.dto.request.coffee.PromotionRequestDTO;
+import org.example.coffeservice.dto.response.coffee.PromotionResponseDTO;
+import org.example.coffeservice.models.coffee.Promotion;
 import org.example.coffeservice.repositories.PromotionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

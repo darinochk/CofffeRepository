@@ -1,8 +1,8 @@
 package org.example.coffeservice.services;
 
-import org.example.coffeservice.dto.request.DeskRequestDTO;
-import org.example.coffeservice.dto.response.DeskResponseDTO;
-import org.example.coffeservice.models.Desk;
+import org.example.coffeservice.dto.request.coffee.DeskRequestDTO;
+import org.example.coffeservice.dto.response.coffee.DeskResponseDTO;
+import org.example.coffeservice.models.coffee.Desk;
 import org.example.coffeservice.repositories.DeskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

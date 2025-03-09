@@ -1,6 +1,6 @@
 package org.example.coffeservice.repositories;
 
-import org.example.coffeservice.models.Review;
+import org.example.coffeservice.models.coffee.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

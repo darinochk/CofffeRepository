@@ -1,9 +1,9 @@
 package org.example.coffeservice.services;
 
-import org.example.coffeservice.dto.request.ReviewRequestDTO;
-import org.example.coffeservice.dto.response.ReviewResponseDTO;
-import org.example.coffeservice.models.Review;
-import org.example.coffeservice.models.User;
+import org.example.coffeservice.dto.request.coffee.ReviewRequestDTO;
+import org.example.coffeservice.dto.response.coffee.ReviewResponseDTO;
+import org.example.coffeservice.models.coffee.Review;
+import org.example.coffeservice.models.user.User;
 import org.example.coffeservice.repositories.ReviewRepository;
 import org.example.coffeservice.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,10 +49,7 @@ public class ReviewService {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String email = auth.getName();
-            User currentUser = userRepository.findByEmail(email);
-            if (currentUser == null) {
-                throw new IllegalArgumentException("Пользователь не найден");
-            }
+            User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
             Review review = new Review();
             review.setUser(currentUser);
@@ -74,10 +71,7 @@ public class ReviewService {
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String email = auth.getName();
-            User currentUser = userRepository.findByEmail(email);
-            if (currentUser == null) {
-                throw new IllegalArgumentException("Пользователь не найден");
-            }
+            User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
             if (!existingReview.getUser().equals(currentUser)) {
                 throw new IllegalArgumentException("Вы можете удалять только свои отзывы.");

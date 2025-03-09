@@ -1,11 +1,11 @@
 package org.example.coffeservice.services;
 
-import org.example.coffeservice.dto.response.BookingResponseDTO;
-import org.example.coffeservice.dto.response.OrderDetailsResponseDTO;
-import org.example.coffeservice.dto.response.OrderResponseDTO;
-import org.example.coffeservice.models.Booking;
-import org.example.coffeservice.models.Order;
-import org.example.coffeservice.models.OrderDetails;
+import org.example.coffeservice.dto.response.coffee.BookingResponseDTO;
+import org.example.coffeservice.dto.response.coffee.OrderDetailsResponseDTO;
+import org.example.coffeservice.dto.response.coffee.OrderResponseDTO;
+import org.example.coffeservice.models.coffee.Booking;
+import org.example.coffeservice.models.coffee.Order;
+import org.example.coffeservice.models.coffee.OrderDetails;
 import org.example.coffeservice.repositories.BookingRepository;
 import org.example.coffeservice.repositories.OrderDetailsRepository;
 import org.example.coffeservice.repositories.OrderRepository;

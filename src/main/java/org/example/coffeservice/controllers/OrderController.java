@@ -1,7 +1,7 @@
 package org.example.coffeservice.controllers;
 
-import org.example.coffeservice.dto.request.OrderRequestDTO;
-import org.example.coffeservice.dto.response.OrderResponseDTO;
+import org.example.coffeservice.dto.request.coffee.OrderRequestDTO;
+import org.example.coffeservice.dto.response.coffee.OrderResponseDTO;
 import org.example.coffeservice.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;

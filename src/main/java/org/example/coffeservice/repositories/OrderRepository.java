@@ -1,6 +1,6 @@
 package org.example.coffeservice.repositories;
 
-import org.example.coffeservice.models.Order;
+import org.example.coffeservice.models.coffee.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

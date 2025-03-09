@@ -1,11 +1,11 @@
 package org.example.coffeservice.services;
 
-import org.example.coffeservice.dto.request.BookingRequestDTO;
-import org.example.coffeservice.dto.response.BookingResponseDTO;
-import org.example.coffeservice.models.Booking;
-import org.example.coffeservice.models.Desk;
-import org.example.coffeservice.models.User;
-import org.example.coffeservice.models.OrderDetails;
+import org.example.coffeservice.dto.request.coffee.BookingRequestDTO;
+import org.example.coffeservice.dto.response.coffee.BookingResponseDTO;
+import org.example.coffeservice.models.coffee.Booking;
+import org.example.coffeservice.models.coffee.Desk;
+import org.example.coffeservice.models.user.User;
+import org.example.coffeservice.models.coffee.OrderDetails;
 import org.example.coffeservice.repositories.BookingRepository;
 import org.example.coffeservice.repositories.DeskRepository;
 import org.example.coffeservice.repositories.OrderDetailsRepository;
@@ -49,10 +49,7 @@ public class BookingService {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String email = auth.getName();
-            User currentUser = userRepository.findByEmail(email);
-            if (currentUser == null) {
-                throw new IllegalArgumentException("Пользователь не найден");
-            }
+            User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
             List<Booking> bookings = bookingRepository.findByUserId(currentUser.getId());
             return bookings.stream()
                     .map(this::convertToDTO)
@@ -74,10 +71,7 @@ public class BookingService {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String email = auth.getName();
-            User currentUser = userRepository.findByEmail(email);
-            if (currentUser == null) {
-                throw new IllegalArgumentException("Пользователь не найден");
-            }
+            User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
             Desk desk = deskRepository.findById(request.getDeskId())
                     .orElseThrow(() -> new IllegalArgumentException("Стол не найден с id " + request.getDeskId()));
 
@@ -114,10 +108,7 @@ public class BookingService {
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String email = auth.getName();
-            User currentUser = userRepository.findByEmail(email);
-            if (currentUser == null) {
-                throw new IllegalArgumentException("Пользователь не найден");
-            }
+            User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
             if (!existingBooking.getUser().equals(currentUser)) {
                 throw new IllegalArgumentException("Вы можете обновлять только свои бронирования.");
             }
@@ -143,10 +134,7 @@ public class BookingService {
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String email = auth.getName();
-            User currentUser = userRepository.findByEmail(email);
-            if (currentUser == null) {
-                throw new IllegalArgumentException("Пользователь не найден");
-            }
+            User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
             if (!existingBooking.getUser().equals(currentUser)) {
                 throw new IllegalArgumentException("Вы можете удалять только свои бронирования.");
             }

@@ -1,8 +1,11 @@
 package org.example.coffeservice.controllers;
 
-import org.example.coffeservice.dto.response.*;
-import org.example.coffeservice.models.Review;
-import org.example.coffeservice.models.User;
+import org.example.coffeservice.dto.response.coffee.BookingResponseDTO;
+import org.example.coffeservice.dto.response.coffee.DeskResponseDTO;
+import org.example.coffeservice.dto.response.coffee.OrderDetailsResponseDTO;
+import org.example.coffeservice.dto.response.coffee.ReviewResponseDTO;
+import org.example.coffeservice.dto.response.user.UserResponseDTO;
+import org.example.coffeservice.models.user.User;
 import org.example.coffeservice.services.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

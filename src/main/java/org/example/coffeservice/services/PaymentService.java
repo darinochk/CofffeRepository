@@ -1,7 +1,11 @@
 package org.example.coffeservice.services;
 
-import org.example.coffeservice.models.*;
-import org.example.coffeservice.dto.response.PaymentSessionResponseDTO;
+import org.example.coffeservice.dto.response.payment.PaymentSessionResponseDTO;
+import org.example.coffeservice.models.coffee.Booking;
+import org.example.coffeservice.models.coffee.OrderDetails;
+import org.example.coffeservice.models.payment.PaymentSession;
+import org.example.coffeservice.models.payment.Transaction;
+import org.example.coffeservice.models.user.User;
 import org.example.coffeservice.repositories.OrderDetailsRepository;
 import org.example.coffeservice.repositories.BookingRepository;
 import org.example.coffeservice.repositories.PaymentSessionRepository;
@@ -20,9 +24,6 @@ public class PaymentService {
     private BookingRepository bookingRepository;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private PaymentSessionRepository paymentSessionRepository;
 
     @Autowired
@@ -35,7 +36,7 @@ public class PaymentService {
         Booking booking = bookingRepository.findById(orderDetails.getBooking().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Booking not found for order details id " + orderDetailsId));
 
-        Transaction transaction = new Transaction("NEW");
+        Transaction transaction = Transaction.builder().status("NEW").build();
         Transaction savedTransaction = transactionRepository.save(transaction);
 
         PaymentSession paymentSession = new PaymentSession();

@@ -1,7 +1,10 @@
 package org.example.coffeservice.services;
 
-import org.example.coffeservice.dto.response.*;
-import org.example.coffeservice.models.*;
+import org.example.coffeservice.dto.response.coffee.*;
+import org.example.coffeservice.dto.response.user.UserResponseDTO;
+import org.example.coffeservice.models.coffee.*;
+import org.example.coffeservice.models.user.Role;
+import org.example.coffeservice.models.user.User;
 import org.example.coffeservice.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -89,7 +92,7 @@ public class AdminService {
 
     public UserResponseDTO addUser(User user) {
         try {
-            user.setRole("VISITOR");
+            user.setRole(Role.VISITOR);
             User savedUser = userRepository.save(user);
             return convertUserToDTO(savedUser);
         } catch (Exception e) {
@@ -118,7 +121,7 @@ public class AdminService {
             if (!role.equals("VISITOR") && !role.equals("ADMIN") && !role.equals("WAITER")) {
                 throw new IllegalArgumentException("Invalid role: " + role);
             }
-            user.setRole(role);
+            user.setRole(Role.valueOf(role));
             User updatedUser = userRepository.save(user);
             return convertUserToDTO(updatedUser);
         } catch (Exception e) {
@@ -203,8 +206,15 @@ public class AdminService {
     }
 
     private UserResponseDTO convertUserToDTO(User user) {
-        return new UserResponseDTO(user.getId(), user.getFirstName(), user.getLastName(),
-                user.getEmail(), user.getPhone(), user.getRole(), user.isLocked());
+        return UserResponseDTO.builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .phone(user.getPhone())
+                .role(user.getRole())
+                .locked(user.isLocked())
+                .build();
     }
 
     private ReviewResponseDTO convertReviewToDTO(Review review) {

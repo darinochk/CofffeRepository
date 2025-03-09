@@ -1,7 +1,7 @@
 package org.example.coffeservice.controllers;
 
-import org.example.coffeservice.dto.request.ReviewRequestDTO;
-import org.example.coffeservice.dto.response.ReviewResponseDTO;
+import org.example.coffeservice.dto.request.coffee.ReviewRequestDTO;
+import org.example.coffeservice.dto.response.coffee.ReviewResponseDTO;
 import org.example.coffeservice.services.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

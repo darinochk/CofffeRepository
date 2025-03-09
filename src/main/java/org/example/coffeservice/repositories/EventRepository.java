@@ -1,6 +1,6 @@
 package org.example.coffeservice.repositories;
 
-import org.example.coffeservice.models.Event;
+import org.example.coffeservice.models.coffee.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;

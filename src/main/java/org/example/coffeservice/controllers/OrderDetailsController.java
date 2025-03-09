@@ -1,10 +1,11 @@
 package org.example.coffeservice.controllers;
 
-import org.example.coffeservice.dto.response.OrderDetailsResponseDTO;
-import org.example.coffeservice.dto.response.OrderResponseDTO;
-import org.example.coffeservice.models.Booking;
-import org.example.coffeservice.models.Order;
-import org.example.coffeservice.models.OrderDetails;
+import org.example.coffeservice.dto.request.coffee.OrderDetailsRequestDTO;
+import org.example.coffeservice.dto.request.coffee.OrderRequestDTO;
+import org.example.coffeservice.dto.response.coffee.OrderDetailsResponseDTO;
+import org.example.coffeservice.dto.response.coffee.OrderResponseDTO;
+import org.example.coffeservice.models.coffee.Order;
+import org.example.coffeservice.models.coffee.OrderDetails;
 import org.example.coffeservice.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,15 @@ public class OrderDetailsController {
 
     @Autowired
     private OrderService orderService;
+
+    @PostMapping("/create")
+    public OrderDetailsResponseDTO createOrderDetails(@RequestBody OrderDetailsRequestDTO orderDetailsRequest) {
+        try {
+            return orderService.createOrderDetails(orderDetailsRequest);
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка создания деталей заказа", e);
+        }
+    }
 
     @GetMapping("/confirm_details/{orderDetailsId}")
     public OrderDetailsResponseDTO confirmDetails(@PathVariable Long orderDetailsId) {

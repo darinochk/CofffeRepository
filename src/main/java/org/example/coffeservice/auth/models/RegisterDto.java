@@ -1,71 +1,32 @@
 package org.example.coffeservice.auth.models;
 
 import jakarta.validation.constraints.*;
+import lombok.Data;
+import lombok.Builder;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.example.coffeservice.utils.validation.ValidPhone;
 
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class RegisterDto {
 
-    @NotEmpty
+    @NotBlank(message = "Firstname can't be blank")
     private String firstName;
 
-    @NotEmpty
+    @NotBlank(message = "Lastname can't be blank")
     private String lastName;
 
-    @NotEmpty
+    @Email(message = "Email should be valid")
+    @NotNull(message = "Email can't be null")
     private String email;
 
+    @ValidPhone
     private String phone;
 
-    private String address;
-
     @NotEmpty
-    @Size(min = 6, message = "Minimum Password length is 6 characters")
+    @Size(min = 6, message = "Minimum password length is 6 characters")
     private String password;
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }

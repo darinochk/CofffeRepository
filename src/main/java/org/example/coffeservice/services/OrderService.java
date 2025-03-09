@@ -1,10 +1,14 @@
 package org.example.coffeservice.services;
 
-import org.example.coffeservice.dto.request.OrderRequestDTO;
-import org.example.coffeservice.dto.response.OrderResponseDTO;
-import org.example.coffeservice.models.Food;
-import org.example.coffeservice.models.Order;
-import org.example.coffeservice.models.OrderDetails;
+import org.example.coffeservice.dto.request.coffee.OrderDetailsRequestDTO;
+import org.example.coffeservice.dto.request.coffee.OrderRequestDTO;
+import org.example.coffeservice.dto.response.coffee.OrderDetailsResponseDTO;
+import org.example.coffeservice.dto.response.coffee.OrderResponseDTO;
+import org.example.coffeservice.models.coffee.Booking;
+import org.example.coffeservice.models.coffee.Food;
+import org.example.coffeservice.models.coffee.Order;
+import org.example.coffeservice.models.coffee.OrderDetails;
+import org.example.coffeservice.repositories.BookingRepository;
 import org.example.coffeservice.repositories.OrderDetailsRepository;
 import org.example.coffeservice.repositories.OrderRepository;
 import org.example.coffeservice.repositories.FoodRepository;
@@ -25,6 +29,8 @@ public class OrderService {
 
     @Autowired
     private FoodRepository foodRepository;
+    @Autowired
+    private BookingRepository bookingRepository;
 
     public List<OrderResponseDTO> getAllOrders() {
         try {
@@ -35,6 +41,14 @@ public class OrderService {
         } catch (Exception e) {
             throw new RuntimeException("Ошибка получения всех заказов", e);
         }
+    }
+
+    public OrderDetailsResponseDTO createOrderDetails(OrderDetailsRequestDTO request) {
+        Booking booking = bookingRepository.findById(request.getBookingId()).orElseThrow(() -> new IllegalArgumentException("Бронировние не найдено с id " + request.getBookingId()));
+
+        OrderDetails orderDetails = orderDetailsRepository.saveAndFlush(OrderDetails.builder().amount(0).booking(booking).status("PENDING").build());
+
+        return OrderDetailsResponseDTO.builder().orderDetailsId(orderDetails.getId()).totalAmount(orderDetails.getAmount()).build();
     }
 
     public OrderResponseDTO createOrder(OrderRequestDTO request) {

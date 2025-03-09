@@ -1,8 +1,9 @@
 package org.example.coffeservice.services;
 
-import org.example.coffeservice.dto.request.UserRequestDTO;
-import org.example.coffeservice.dto.response.UserResponseDTO;
-import org.example.coffeservice.models.User;
+import org.example.coffeservice.dto.request.user.UserRequestDTO;
+import org.example.coffeservice.dto.response.user.UserResponseDTO;
+import org.example.coffeservice.models.user.Role;
+import org.example.coffeservice.models.user.User;
 import org.example.coffeservice.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -49,7 +50,7 @@ public class UserService implements UserDetailsService {
             user.setPassword(userRequest.getPassword());
             user.setPhone(userRequest.getPhone());
             user.setLocked(userRequest.isLocked());
-            user.setRole(userRequest.getRole() != null ? userRequest.getRole() : "VISITOR");
+            user.setRole(userRequest.getRole() != null ? userRequest.getRole() : Role.VISITOR);
 
             User savedUser = userRepository.save(user);
             return convertToResponseDTO(savedUser);
@@ -63,10 +64,7 @@ public class UserService implements UserDetailsService {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String email = authentication.getName();
 
-            User currentUser = userRepository.findByEmail(email);
-            if (currentUser == null) {
-                throw new IllegalArgumentException("User not found");
-            }
+            User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
             currentUser.setFirstName(userRequest.getFirstName());
             currentUser.setLastName(userRequest.getLastName());
@@ -84,10 +82,7 @@ public class UserService implements UserDetailsService {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String email = authentication.getName();
 
-            User currentUser = userRepository.findByEmail(email);
-            if (currentUser == null) {
-                throw new IllegalArgumentException("User not found");
-            }
+            User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
             if (!currentUser.getId().equals(id)) {
                 throw new IllegalArgumentException("You can only delete your own profile.");
@@ -111,21 +106,10 @@ public class UserService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        try {
-            User appUser = userRepository.findByEmail(email);
-
-            if (appUser != null) {
-                return org.springframework.security.core.userdetails.User.withUsername(appUser.getEmail())
-                        .password(appUser.getPassword())
-                        .roles(appUser.getRole())
-                        .build();
-            }
-
-            throw new UsernameNotFoundException("User not found with email " + email);
-        } catch (Exception e) {
-            throw new RuntimeException("Error loading user by username", e);
-        }
+    public User loadUserByUsername(String email) throws UsernameNotFoundException {
+        return userRepository
+                .findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User with provided email not found."));
     }
 
     private UserResponseDTO convertToResponseDTO(User user) {

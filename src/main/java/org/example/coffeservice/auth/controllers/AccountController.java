@@ -4,7 +4,8 @@ import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import jakarta.validation.Valid;
 import org.example.coffeservice.auth.models.LoginDto;
 import org.example.coffeservice.auth.models.RegisterDto;
-import org.example.coffeservice.models.User;
+import org.example.coffeservice.models.user.Role;
+import org.example.coffeservice.models.user.User;
 import org.example.coffeservice.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,9 +24,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/account")
@@ -76,13 +75,13 @@ public class AccountController {
         appUser.setPhone(registerDto.getPhone());
         appUser.setLastName(registerDto.getLastName());
         appUser.setEmail(registerDto.getEmail());
-        appUser.setRole("VISITOR");
+        appUser.setRole(Role.VISITOR);
         appUser.setPassword(bCryptEncoder.encode(registerDto.getPassword()));
 
 
         try {
             var otherUser = appUserRepository.findByEmail(registerDto.getEmail());
-            if (otherUser != null) {
+            if (otherUser.isPresent()) {
                 return ResponseEntity.badRequest().body("Email address already used");
             }
 
@@ -127,7 +126,7 @@ public class AccountController {
                     )
             );
 
-            User appUser = appUserRepository.findByEmail(loginDto.getEmail());
+            User appUser = appUserRepository.findByEmail(loginDto.getEmail()).orElseThrow(() -> new IllegalArgumentException("User not found"));
             String jwtToken = createJwtToken(appUser);
 
             var response = new HashMap<String, Object>();
