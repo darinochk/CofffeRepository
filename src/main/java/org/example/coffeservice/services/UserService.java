@@ -62,9 +62,7 @@ public class UserService implements UserDetailsService {
     public UserResponseDTO updateUser(UserRequestDTO userRequest) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String email = authentication.getName();
-
-            User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
+            User currentUser = (User) authentication.getPrincipal();
 
             currentUser.setFirstName(userRequest.getFirstName());
             currentUser.setLastName(userRequest.getLastName());
@@ -80,9 +78,7 @@ public class UserService implements UserDetailsService {
     public void deleteUser(Long id) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String email = authentication.getName();
-
-            User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
+            User currentUser = (User) authentication.getPrincipal();
 
             if (!currentUser.getId().equals(id)) {
                 throw new IllegalArgumentException("You can only delete your own profile.");
