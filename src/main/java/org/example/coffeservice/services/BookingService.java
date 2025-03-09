@@ -5,10 +5,8 @@ import org.example.coffeservice.dto.response.coffee.BookingResponseDTO;
 import org.example.coffeservice.models.coffee.Booking;
 import org.example.coffeservice.models.coffee.Desk;
 import org.example.coffeservice.models.user.User;
-import org.example.coffeservice.models.coffee.OrderDetails;
 import org.example.coffeservice.repositories.BookingRepository;
 import org.example.coffeservice.repositories.DeskRepository;
-import org.example.coffeservice.repositories.OrderDetailsRepository;
 import org.example.coffeservice.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -31,8 +29,6 @@ public class BookingService {
     @Autowired
     private DeskRepository deskRepository;
 
-    @Autowired
-    private OrderDetailsRepository orderDetailsRepository;
 
     public List<BookingResponseDTO> getAllBookings() {
         try {
@@ -44,6 +40,7 @@ public class BookingService {
             throw new RuntimeException("Ошибка получения всех бронирований", e);
         }
     }
+
 
     public List<BookingResponseDTO> getBookingsByUser() {
         try {
@@ -59,6 +56,7 @@ public class BookingService {
         }
     }
 
+
     public List<Booking> getBookingsByDesk(Long deskId) {
         try {
             return bookingRepository.findByDeskId(deskId);
@@ -66,6 +64,7 @@ public class BookingService {
             throw new RuntimeException("Ошибка получения бронирований для стола с id " + deskId, e);
         }
     }
+
 
     public BookingResponseDTO createBooking(BookingRequestDTO request) {
         try {
@@ -75,31 +74,27 @@ public class BookingService {
             Desk desk = deskRepository.findById(request.getDeskId())
                     .orElseThrow(() -> new IllegalArgumentException("Стол не найден с id " + request.getDeskId()));
 
+
+            if (!isDeskAvailable(desk.getId(), request.getStartDate(), request.getEndDate())) {
+                throw new IllegalArgumentException("Стол уже забронирован на выбранное время.");
+            }
+
+
             Booking booking = new Booking();
             booking.setUser(currentUser);
             booking.setDesk(desk);
             booking.setStartDate(request.getStartDate());
             booking.setEndDate(request.getEndDate());
-            booking.setStatus(request.getStatus());
+            booking.setStatus("IS BEING PROCESSED");
 
-            if (isDeskAvailable(desk.getId(), request.getStartDate(), request.getEndDate())) {
-                booking.setStatus("IS BEING PROCESSED");
-                Booking savedBooking = bookingRepository.save(booking);
+            Booking savedBooking = bookingRepository.save(booking);
 
-                OrderDetails orderDetails = new OrderDetails();
-                orderDetails.setBooking(savedBooking);
-                orderDetails.setAmount(0.0);
-                orderDetails.setStatus(null);
-                orderDetailsRepository.save(orderDetails);
-
-                return convertToDTO(savedBooking);
-            } else {
-                throw new IllegalArgumentException("Стол уже забронирован на выбранное время.");
-            }
+            return convertToDTO(savedBooking);
         } catch (Exception e) {
             throw new RuntimeException("Ошибка создания бронирования", e);
         }
     }
+
 
     public BookingResponseDTO updateBooking(Long id, BookingRequestDTO request) {
         try {
@@ -127,6 +122,7 @@ public class BookingService {
         }
     }
 
+
     public void deleteBooking(Long id) {
         try {
             Booking existingBooking = bookingRepository.findById(id)
@@ -144,6 +140,7 @@ public class BookingService {
         }
     }
 
+
     private boolean isDeskAvailable(Long deskId, Date startDate, Date endDate) {
         try {
             List<Booking> existingBookings = bookingRepository.findByDeskIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
@@ -153,6 +150,7 @@ public class BookingService {
             throw new RuntimeException("Ошибка проверки доступности стола", e);
         }
     }
+
 
     public BookingResponseDTO convertToDTO(Booking booking) {
         String userName = booking.getUser().getFirstName() + " " + booking.getUser().getLastName();
