@@ -38,6 +38,12 @@ public class WaiterController {
         return waiterService.confirmBooking(id);
     }
 
+    @GetMapping("/orderDetails")
+    @PreAuthorize("hasRole('WAITER')")
+    public List<OrderDetailsResponseDTO> getAllOrderDetails() {
+        return waiterService.getAllOrderDetails();
+    }
+
     @PutMapping("/confirmOrderDetails/{orderDetailsId}")
     @PreAuthorize("hasRole('WAITER')")
     public ResponseEntity<OrderDetailsResponseDTO> confirmOrderDetails(@PathVariable Long orderDetailsId) {

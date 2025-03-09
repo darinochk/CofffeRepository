@@ -56,44 +56,56 @@ public class WaiterService {
     }
 
     public OrderDetailsResponseDTO confirmOrderDetails(Long orderDetailsId) {
-
-        logger.info("Attempting to confirm OrderDetails with ID: {}", orderDetailsId);
-
+        logger.info("Confirming order details with ID: {}", orderDetailsId);
 
         OrderDetails orderDetails = orderDetailsRepository.findById(orderDetailsId)
-                .orElseThrow(() -> new IllegalArgumentException("OrderDetails not found with id " + orderDetailsId));
-
+                .orElseThrow(() -> {
+                    logger.error("OrderDetails not found with ID: {}", orderDetailsId);
+                    return new IllegalArgumentException("OrderDetails not found with id " + orderDetailsId);
+                });
 
         if ("CONFIRMED".equals(orderDetails.getStatus())) {
-            logger.warn("OrderDetails with ID {} already confirmed", orderDetailsId);
-            throw new IllegalStateException("Order details already confirmed.");
+            logger.warn("OrderDetails with ID {} is already confirmed.", orderDetailsId);
+            throw new IllegalStateException("OrderDetails already confirmed.");
         }
 
         orderDetails.setStatus("CONFIRMED");
-
-
         List<Order> orders = orderRepository.findByOrderDetailsId(orderDetailsId);
 
+        if (orders.isEmpty()) {
+            logger.warn("No orders found for OrderDetails with ID: {}", orderDetailsId);
+            throw new IllegalStateException("No orders found for these order details.");
+        }
 
         double totalAmount = orders.stream()
                 .mapToDouble(order -> order.getQuantity() * order.getFood().getPrice())
                 .sum();
         orderDetails.setAmount(totalAmount);
 
-
         OrderDetails savedDetails = orderDetailsRepository.save(orderDetails);
-
+        logger.info("OrderDetails with ID {} confirmed successfully.", orderDetailsId);
 
         List<OrderResponseDTO> orderDTOs = orders.stream()
                 .map(this::convertToOrderResponseDTO)
                 .collect(Collectors.toList());
-
-
-        logger.info("OrderDetails with ID {} confirmed successfully", orderDetailsId);
-
-
         return new OrderDetailsResponseDTO(savedDetails.getId(), savedDetails.getAmount(), orderDTOs);
     }
+
+    public List<OrderDetailsResponseDTO> getAllOrderDetails() {
+        List<OrderDetails> orderDetailsList = orderDetailsRepository.findAll();
+        return orderDetailsList.stream()
+                .map(this::convertToOrderDetailsResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    private OrderDetailsResponseDTO convertToOrderDetailsResponseDTO(OrderDetails orderDetails) {
+        List<Order> orders = orderRepository.findByOrderDetailsId(orderDetails.getId());
+        List<OrderResponseDTO> orderDTOs = orders.stream()
+                .map(this::convertToOrderResponseDTO)
+                .collect(Collectors.toList());
+        return new OrderDetailsResponseDTO(orderDetails.getId(), orderDetails.getAmount(), orderDTOs);
+    }
+
 
     private OrderResponseDTO convertToOrderResponseDTO(Order order) {
         return new OrderResponseDTO(
