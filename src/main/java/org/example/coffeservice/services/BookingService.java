@@ -45,8 +45,8 @@ public class BookingService {
     public List<BookingResponseDTO> getBookingsByUser() {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            String email = auth.getName();
-            User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
+            User currentUser = (User) auth.getPrincipal();
+            String email = currentUser.getEmail();
             List<Booking> bookings = bookingRepository.findByUserId(currentUser.getId());
             return bookings.stream()
                     .map(this::convertToDTO)
@@ -69,8 +69,8 @@ public class BookingService {
     public BookingResponseDTO createBooking(BookingRequestDTO request) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            String email = auth.getName();
-            User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
+            User currentUser = (User) auth.getPrincipal();
+            String email = currentUser.getEmail();
             Desk desk = deskRepository.findById(request.getDeskId())
                     .orElseThrow(() -> new IllegalArgumentException("Стол не найден с id " + request.getDeskId()));
 
@@ -102,8 +102,7 @@ public class BookingService {
                     .orElseThrow(() -> new IllegalArgumentException("Бронирование не найдено с id " + id));
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            String email = auth.getName();
-            User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
+            User currentUser = (User) auth.getPrincipal();
             if (!existingBooking.getUser().equals(currentUser)) {
                 throw new IllegalArgumentException("Вы можете обновлять только свои бронирования.");
             }
@@ -129,8 +128,7 @@ public class BookingService {
                     .orElseThrow(() -> new IllegalArgumentException("Бронирование не найдено с id " + id));
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            String email = auth.getName();
-            User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
+            User currentUser = (User) auth.getPrincipal();
             if (!existingBooking.getUser().equals(currentUser)) {
                 throw new IllegalArgumentException("Вы можете удалять только свои бронирования.");
             }
