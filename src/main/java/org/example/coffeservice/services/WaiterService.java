@@ -14,9 +14,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class WaiterService {
+
+    private static final Logger logger = LoggerFactory.getLogger(WaiterService.class);
 
     @Autowired
     private BookingRepository bookingRepository;
@@ -41,7 +45,6 @@ public class WaiterService {
                 .collect(Collectors.toList());
     }
 
-
     public BookingResponseDTO confirmBooking(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new IllegalArgumentException("Booking not found with id " + bookingId));
@@ -53,20 +56,41 @@ public class WaiterService {
     }
 
     public OrderDetailsResponseDTO confirmOrderDetails(Long orderDetailsId) {
+
+        logger.info("Attempting to confirm OrderDetails with ID: {}", orderDetailsId);
+
+
         OrderDetails orderDetails = orderDetailsRepository.findById(orderDetailsId)
                 .orElseThrow(() -> new IllegalArgumentException("OrderDetails not found with id " + orderDetailsId));
+
+
+        if ("CONFIRMED".equals(orderDetails.getStatus())) {
+            logger.warn("OrderDetails with ID {} already confirmed", orderDetailsId);
+            throw new IllegalStateException("Order details already confirmed.");
+        }
+
         orderDetails.setStatus("CONFIRMED");
 
+
         List<Order> orders = orderRepository.findByOrderDetailsId(orderDetailsId);
+
+
         double totalAmount = orders.stream()
                 .mapToDouble(order -> order.getQuantity() * order.getFood().getPrice())
                 .sum();
         orderDetails.setAmount(totalAmount);
+
+
         OrderDetails savedDetails = orderDetailsRepository.save(orderDetails);
+
 
         List<OrderResponseDTO> orderDTOs = orders.stream()
                 .map(this::convertToOrderResponseDTO)
                 .collect(Collectors.toList());
+
+
+        logger.info("OrderDetails with ID {} confirmed successfully", orderDetailsId);
+
 
         return new OrderDetailsResponseDTO(savedDetails.getId(), savedDetails.getAmount(), orderDTOs);
     }

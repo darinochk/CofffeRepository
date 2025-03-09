@@ -7,6 +7,9 @@ import org.example.coffeservice.services.WaiterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -37,7 +40,12 @@ public class WaiterController {
 
     @PutMapping("/confirmOrderDetails/{orderDetailsId}")
     @PreAuthorize("hasRole('WAITER')")
-    public OrderDetailsResponseDTO confirmOrderDetails(@PathVariable Long orderDetailsId) {
-        return waiterService.confirmOrderDetails(orderDetailsId);
+    public ResponseEntity<OrderDetailsResponseDTO> confirmOrderDetails(@PathVariable Long orderDetailsId) {
+        try {
+            OrderDetailsResponseDTO response = waiterService.confirmOrderDetails(orderDetailsId);
+            return ResponseEntity.ok(response);
+        } catch (IllegalStateException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
     }
 }
