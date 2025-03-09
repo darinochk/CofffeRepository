@@ -1,9 +1,13 @@
 package org.example.coffeservice.services;
 
 import org.example.coffeservice.dto.request.user.UserRequestDTO;
+import org.example.coffeservice.dto.response.coffee.OrderDetailsResponseDTO;
+import org.example.coffeservice.dto.response.coffee.OrderResponseDTO;
 import org.example.coffeservice.dto.response.user.UserResponseDTO;
+import org.example.coffeservice.models.coffee.OrderDetails;
 import org.example.coffeservice.models.user.Role;
 import org.example.coffeservice.models.user.User;
+import org.example.coffeservice.repositories.OrderDetailsRepository;
 import org.example.coffeservice.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -106,6 +110,36 @@ public class UserService implements UserDetailsService {
         return userRepository
                 .findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User with provided email not found."));
+    }
+
+    @Autowired
+    private OrderDetailsRepository orderDetailsRepository;
+    public List<OrderDetailsResponseDTO> getOrderDetailsByBookingId(Long bookingId) {
+        List<OrderDetails> orderDetailsList = orderDetailsRepository.findByBookingId(bookingId);
+
+        if (orderDetailsList.isEmpty()) {
+            throw new IllegalArgumentException("No OrderDetails found for booking ID " + bookingId);
+        }
+
+        return orderDetailsList.stream()
+                .map(this::convertToOrderDetailsResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    private OrderDetailsResponseDTO convertToOrderDetailsResponseDTO(OrderDetails orderDetails) {
+        return new OrderDetailsResponseDTO(
+                orderDetails.getId(),
+                orderDetails.getAmount(),
+                orderDetails.getOrders().stream()
+                        .map(order -> new OrderResponseDTO(
+                                order.getId(),
+                                order.getFood().getName(),
+                                order.getQuantity(),
+                                order.getTotalPrice(),
+                                order.getOrderDetails().getId()
+                        ))
+                        .collect(Collectors.toList())
+        );
     }
 
     private UserResponseDTO convertToResponseDTO(User user) {

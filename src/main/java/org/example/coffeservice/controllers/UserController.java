@@ -1,6 +1,7 @@
 package org.example.coffeservice.controllers;
 
 import org.example.coffeservice.dto.request.user.UserRequestDTO;
+import org.example.coffeservice.dto.response.coffee.OrderDetailsResponseDTO;
 import org.example.coffeservice.dto.response.user.UserResponseDTO;
 import org.example.coffeservice.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,16 @@ public class UserController {
             return userService.getUserById(id);
         } catch (Exception e) {
             throw new RuntimeException("Error retrieving user by id");
+        }
+    }
+
+    @GetMapping("/orderDetailsByBooking/{bookingId}")
+    @PreAuthorize("hasRole('USER')")
+    public List<OrderDetailsResponseDTO> getOrderDetailsByBooking(@PathVariable Long bookingId) {
+        try {
+            return userService.getOrderDetailsByBookingId(bookingId);
+        } catch (Exception e) {
+            throw new RuntimeException("Error retrieving OrderDetails for booking ID " + bookingId, e);
         }
     }
 

@@ -13,7 +13,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "orderr")
+@Table(name = "orders")
 public class Order {
 
     @Id
@@ -25,7 +25,7 @@ public class Order {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Food food;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_details_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private OrderDetails orderDetails;
