@@ -1,5 +1,6 @@
 package org.example.coffeservice.services;
 
+import org.example.coffeservice.dto.request.user.UserRequestDTO;
 import org.example.coffeservice.dto.response.coffee.*;
 import org.example.coffeservice.dto.response.user.UserResponseDTO;
 import org.example.coffeservice.models.coffee.*;
@@ -79,6 +80,23 @@ public class AdminService {
             deskRepository.deleteById(id);
         } catch (Exception e) {
             throw new RuntimeException("Error deleting desk with id " + id, e);
+        }
+    }
+
+    public UserResponseDTO createAdmin(UserRequestDTO userRequest) {
+        try {
+            User user = new User();
+            user.setFirstName(userRequest.getFirstName());
+            user.setLastName(userRequest.getLastName());
+            user.setEmail(userRequest.getEmail());
+            user.setPassword(userRequest.getPassword());
+            user.setPhone(userRequest.getPhone());
+            user.setLocked(userRequest.isLocked());
+            user.setRole(Role.ADMIN);
+            User savedUser = userRepository.save(user);
+            return convertUserToDTO(savedUser);
+        } catch (Exception e) {
+            throw new RuntimeException("Error creating admin", e);
         }
     }
 

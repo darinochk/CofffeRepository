@@ -1,5 +1,6 @@
 package org.example.coffeservice.controllers;
 
+import org.example.coffeservice.dto.request.user.UserRequestDTO;
 import org.example.coffeservice.dto.response.coffee.BookingResponseDTO;
 import org.example.coffeservice.dto.response.coffee.DeskResponseDTO;
 import org.example.coffeservice.dto.response.coffee.OrderDetailsResponseDTO;
@@ -75,6 +76,12 @@ public class AdminController {
         } catch (Exception e) {
             return handleError("Error deleting desk");
         }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<UserResponseDTO> registerAdmin(@RequestBody UserRequestDTO userRequest) {
+        UserResponseDTO newAdmin = adminService.createAdmin(userRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newAdmin);
     }
 
     @DeleteMapping("/deleteUser/{id}")

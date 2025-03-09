@@ -37,7 +37,7 @@ public class SecurityConfig implements WebMvcConfigurer {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/account", "/account/login", "/account/register").permitAll()
+                        .requestMatchers("/", "/account", "/account/login", "/account/register", "/admin/register").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
