@@ -29,6 +29,15 @@ public class OrderDetailsController {
         }
     }
 
+    @GetMapping("/get/{bookingId}")
+    public List<OrderDetails> getOrderDetails(@PathVariable Long bookingId) {
+        try {
+            return orderService.getOrderDetailsByBookingId(bookingId);
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка создания деталей заказа", e);
+        }
+    }
+
     @GetMapping("/confirm_details/{orderDetailsId}")
     public OrderDetailsResponseDTO confirmDetails(@PathVariable Long orderDetailsId) {
         try {
