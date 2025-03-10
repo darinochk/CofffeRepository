@@ -51,6 +51,10 @@ public class OrderService {
         return OrderDetailsResponseDTO.builder().orderDetailsId(orderDetails.getId()).totalAmount(orderDetails.getAmount()).build();
     }
 
+    public List<OrderDetails> getOrderDetailsByBookingId(Long bookingId) {
+        return orderDetailsRepository.findByBookingId(bookingId);
+    }
+
     public OrderResponseDTO createOrder(OrderRequestDTO request) {
         try {
             Food food = foodRepository.findById(request.getFoodId())
