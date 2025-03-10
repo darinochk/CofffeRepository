@@ -54,7 +54,14 @@ public class UserService implements UserDetailsService {
             user.setPassword(userRequest.getPassword());
             user.setPhone(userRequest.getPhone());
             user.setLocked(userRequest.isLocked());
-            user.setRole(userRequest.getRole() != null ? userRequest.getRole() : Role.VISITOR);
+
+            String roleStr = userRequest.getRole().name();
+            try {
+
+                user.setRole(Role.valueOf(roleStr.toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid role: " + roleStr);
+            }
 
             User savedUser = userRepository.save(user);
             return convertToResponseDTO(savedUser);

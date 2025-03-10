@@ -85,6 +85,21 @@ public class AdminService {
 
     public UserResponseDTO createAdmin(UserRequestDTO userRequest) {
         try {
+            System.out.println("Received request to create user with role: " + userRequest.getRole());
+
+            if (userRequest.getRole() == null) {
+                throw new IllegalArgumentException("Role cannot be null");
+            }
+
+            Role role;
+            if ("ADMIN".equals(userRequest.getRole())) {
+                role = Role.ADMIN;
+            } else if ("VISITOR".equals(userRequest.getRole())) {
+                role = Role.VISITOR;
+            } else {
+                throw new IllegalArgumentException("Invalid role provided: " + userRequest.getRole());
+            }
+
             User user = new User();
             user.setFirstName(userRequest.getFirstName());
             user.setLastName(userRequest.getLastName());
@@ -92,19 +107,28 @@ public class AdminService {
             user.setPassword(userRequest.getPassword());
             user.setPhone(userRequest.getPhone());
             user.setLocked(userRequest.isLocked());
-            user.setRole(Role.ADMIN);
+            user.setRole(role);
+
+            System.out.println("Assigned role to user: " + user.getRole());
+
             User savedUser = userRepository.save(user);
+
             return convertUserToDTO(savedUser);
+
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid role provided: " + userRequest.getRole(), e);
         } catch (Exception e) {
             throw new RuntimeException("Error creating admin", e);
         }
     }
 
-    public void deleteUser(Long id) {
+
+    private boolean isValidRole(String roleString) {
         try {
-            userRepository.deleteById(id);
-        } catch (Exception e) {
-            throw new RuntimeException("Error deleting user with id " + id, e);
+            Role.valueOf(roleString);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
         }
     }
 
@@ -136,16 +160,17 @@ public class AdminService {
         try {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new IllegalArgumentException("User not found with id " + userId));
-            if (!role.equals("VISITOR") && !role.equals("ADMIN") && !role.equals("WAITER")) {
-                throw new IllegalArgumentException("Invalid role: " + role);
-            }
-            user.setRole(Role.valueOf(role));
+
+            Role newRole = Role.valueOf(role.toUpperCase());
+            user.setRole(newRole);
+
             User updatedUser = userRepository.save(user);
             return convertUserToDTO(updatedUser);
         } catch (Exception e) {
             throw new RuntimeException("Error assigning role to user with id " + userId, e);
         }
     }
+
 
     public UserResponseDTO blockUser(Long id) {
         try {
@@ -262,4 +287,5 @@ public class AdminService {
                 booking.getStatus()
         );
     }
+
 }

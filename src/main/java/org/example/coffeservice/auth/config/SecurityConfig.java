@@ -20,7 +20,9 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.cors.CorsConfiguration;
 
+import java.util.List;
 import javax.crypto.spec.SecretKeySpec;
 
 @Configuration
@@ -35,6 +37,19 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .cors(cors -> cors.configurationSource(request -> {
+                    var corsConfiguration = new CorsConfiguration();
+                    corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5000"));
+                    corsConfiguration.setAllowedMethods(List.of(
+                            "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD", "CONNECT", "OPTIONS")
+                    );
+                    corsConfiguration.setAllowedHeaders(List.of("*"));
+                    corsConfiguration.setAllowCredentials(true);
+                    corsConfiguration.setMaxAge(10L);
+                    corsConfiguration.addExposedHeader("X-Response-Uuid");
+                    corsConfiguration.addExposedHeader("X-Total-Count");
+                    return corsConfiguration;
+                }))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/account", "/account/login", "/account/register", "/admin/register").permitAll()
@@ -60,13 +75,5 @@ public class SecurityConfig implements WebMvcConfigurer {
         provider.setPasswordEncoder(new BCryptPasswordEncoder());
 
         return new ProviderManager(provider);
-    }
-
-    @Override
-    public void addCorsMappings(CorsRegistry cors) {
-        cors.addMapping("/**")
-                .allowedOrigins("*")
-                .allowedMethods("*")
-                .maxAge(3600);
     }
 }

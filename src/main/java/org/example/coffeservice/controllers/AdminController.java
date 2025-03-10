@@ -84,14 +84,14 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.CREATED).body(newAdmin);
     }
 
-    @DeleteMapping("/deleteUser/{id}")
+    @DeleteMapping("/blockUser/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> deleteUser(@PathVariable Long id) {
         try {
-            adminService.deleteUser(id);
-            return ResponseEntity.ok("User deleted successfully");
+            adminService.blockUser(id);
+            return ResponseEntity.ok("User blocked successfully");
         } catch (Exception e) {
-            return handleError("Error deleting user");
+            return handleError("Error of blocking this user");
         }
     }
 
