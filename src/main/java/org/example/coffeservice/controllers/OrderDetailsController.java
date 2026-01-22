@@ -1,7 +1,6 @@
 package org.example.coffeservice.controllers;
 
 import org.example.coffeservice.dto.request.coffee.OrderDetailsRequestDTO;
-import org.example.coffeservice.dto.request.coffee.OrderRequestDTO;
 import org.example.coffeservice.dto.response.coffee.OrderDetailsResponseDTO;
 import org.example.coffeservice.dto.response.coffee.OrderResponseDTO;
 import org.example.coffeservice.models.coffee.Order;
@@ -17,60 +16,58 @@ import java.util.stream.Collectors;
 @RequestMapping("/order-details")
 public class OrderDetailsController {
 
-    @Autowired
-    private OrderService orderService;
+  @Autowired private OrderService orderService;
 
-    @PostMapping("/create")
-    public OrderDetailsResponseDTO createOrderDetails(@RequestBody OrderDetailsRequestDTO orderDetailsRequest) {
-        try {
-            return orderService.createOrderDetails(orderDetailsRequest);
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка создания деталей заказа", e);
-        }
+  @PostMapping("/create")
+  public OrderDetailsResponseDTO createOrderDetails(
+      @RequestBody OrderDetailsRequestDTO orderDetailsRequest) {
+    try {
+      return orderService.createOrderDetails(orderDetailsRequest);
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка создания деталей заказа", exception);
     }
+  }
 
-    @GetMapping("/get/{bookingId}")
-    public List<OrderDetails> getOrderDetails(@PathVariable Long bookingId) {
-        try {
-            return orderService.getOrderDetailsByBookingId(bookingId);
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка создания деталей заказа", e);
-        }
+  @GetMapping("/get/{bookingId}")
+  public List<OrderDetails> getOrderDetails(@PathVariable Long bookingId) {
+    try {
+      return orderService.getOrderDetailsByBookingId(bookingId);
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка получения деталей заказа", exception);
     }
+  }
 
-    @GetMapping("/confirm_details/{orderDetailsId}")
-    public OrderDetailsResponseDTO confirmDetails(@PathVariable Long orderDetailsId) {
-        try {
-            List<Order> orders = orderService.getOrdersByOrderDetailsId(orderDetailsId);
+  @GetMapping("/confirm_details/{orderDetailsId}")
+  public OrderDetailsResponseDTO confirmDetails(@PathVariable Long orderDetailsId) {
+    try {
+      List<Order> orders = orderService.getOrdersByOrderDetailsId(orderDetailsId);
 
-            double totalAmount = 0.0;
-            List<OrderResponseDTO> orderDTOs = orders.stream()
-                    .map(this::convertOrderToDTO)
-                    .collect(Collectors.toList());
+      double totalAmount =
+          orders.stream()
+              .mapToDouble(order -> order.getQuantity() * order.getFood().getPrice())
+              .sum();
 
-            for (Order order : orders) {
-                totalAmount += order.getQuantity() * order.getFood().getPrice();
-            }
+      List<OrderResponseDTO> orderDTOs =
+          orders.stream().map(this::convertOrderToDTO).collect(Collectors.toList());
 
-            if (!orders.isEmpty()) {
-                OrderDetails orderDetails = orders.get(0).getOrderDetails();
-                orderDetails.setAmount(totalAmount);
-                orderService.updateOrderDetails(orderDetails);
-            }
+      if (!orders.isEmpty()) {
+        OrderDetails orderDetails = orders.get(0).getOrderDetails();
+        orderDetails.setAmount(totalAmount);
+        orderService.updateOrderDetails(orderDetails);
+      }
 
-            return new OrderDetailsResponseDTO(orderDetailsId, totalAmount, orderDTOs);
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка получения или обработки деталей заказа", e);
-        }
+      return new OrderDetailsResponseDTO(orderDetailsId, totalAmount, orderDTOs);
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка получения или обработки деталей заказа", exception);
     }
+  }
 
-    private OrderResponseDTO convertOrderToDTO(Order order) {
-        return new OrderResponseDTO(
-                order.getId(),
-                order.getFood().getName(),
-                order.getQuantity(),
-                order.getTotalPrice(),
-                order.getOrderDetails().getId()
-        );
-    }
+  private OrderResponseDTO convertOrderToDTO(Order order) {
+    return new OrderResponseDTO(
+        order.getId(),
+        order.getFood().getName(),
+        order.getQuantity(),
+        order.getTotalPrice(),
+        order.getOrderDetails().getId());
+  }
 }

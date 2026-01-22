@@ -6,18 +6,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.coffeservice.utils.Constants;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class FoodRequestDTO {
-    @NotBlank(message = "Название блюда не может быть пустым")
-    private String name;
+  @NotBlank(message = "Название блюда не может быть пустым")
+  private String name;
 
-    @Min(value = 0, message = "Цена должна быть неотрицательной")
-    private double price;
+  @Min(value = (long) Constants.MIN_PRICE, message = "Цена должна быть неотрицательной")
+  private double price;
 
-    @NotBlank(message = "Тип блюда не может быть пустым")
-    private String foodType;
+  @NotBlank(message = "Тип блюда не может быть пустым")
+  private String foodType;
 }

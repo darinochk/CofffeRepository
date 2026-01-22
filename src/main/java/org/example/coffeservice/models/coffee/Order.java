@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.coffeservice.utils.Constants;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -32,10 +33,10 @@ public class Order {
 
     private int quantity;
 
-    public double getTotalPrice() {
-        if (food != null) {
-            return this.quantity * food.getPrice();
-        }
-        return 0.0;
+  public double getTotalPrice() {
+    if (food != null) {
+      return this.quantity * food.getPrice();
     }
+    return Constants.DEFAULT_TOTAL_PRICE;
+  }
 }

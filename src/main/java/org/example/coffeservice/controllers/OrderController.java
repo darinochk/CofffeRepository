@@ -13,43 +13,43 @@ import java.util.List;
 @RequestMapping("/orders")
 public class OrderController {
 
-    @Autowired
-    private OrderService orderService;
+  @Autowired private OrderService orderService;
 
-    @GetMapping("/")
-    @PreAuthorize("hasRole('ADMIN')")
-    public List<OrderResponseDTO> getAllOrders() {
-        try {
-            return orderService.getAllOrders();
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка получения заказов", e);
-        }
+  @GetMapping("/")
+  @PreAuthorize("hasRole('ADMIN')")
+  public List<OrderResponseDTO> getAllOrders() {
+    try {
+      return orderService.getAllOrders();
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка получения заказов", exception);
     }
+  }
 
-    @PostMapping("/create")
-    public OrderResponseDTO createOrder(@RequestBody OrderRequestDTO orderRequest) {
-        try {
-            return orderService.createOrder(orderRequest);
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка создания заказа", e);
-        }
+  @PostMapping("/create")
+  public OrderResponseDTO createOrder(@RequestBody OrderRequestDTO orderRequest) {
+    try {
+      return orderService.createOrder(orderRequest);
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка создания заказа", exception);
     }
+  }
 
-    @PutMapping("/update/{id}")
-    public OrderResponseDTO updateOrder(@PathVariable Long id, @RequestBody OrderRequestDTO orderRequest) {
-        try {
-            return orderService.updateOrder(id, orderRequest);
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка обновления заказа", e);
-        }
+  @PutMapping("/update/{id}")
+  public OrderResponseDTO updateOrder(
+      @PathVariable Long id, @RequestBody OrderRequestDTO orderRequest) {
+    try {
+      return orderService.updateOrder(id, orderRequest);
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка обновления заказа", exception);
     }
+  }
 
-    @DeleteMapping("/delete/{id}")
-    public void deleteOrder(@PathVariable Long id) {
-        try {
-            orderService.deleteOrder(id);
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка удаления заказа", e);
-        }
+  @DeleteMapping("/delete/{id}")
+  public void deleteOrder(@PathVariable Long id) {
+    try {
+      orderService.deleteOrder(id);
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка удаления заказа", exception);
     }
+  }
 }

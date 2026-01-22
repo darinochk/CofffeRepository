@@ -6,18 +6,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.coffeservice.utils.Constants;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class DeskRequestDTO {
-    @Min(value = 1, message = "Номер стола должен быть не меньше 1")
-    private int deskNumber;
+  @Min(value = Constants.MIN_DESK_NUMBER, message = "Номер стола должен быть не меньше 1")
+  private int deskNumber;
 
-    @Min(value = 1, message = "Вместимость должна быть не меньше 1")
-    private int capacity;
+  @Min(value = Constants.MIN_CAPACITY, message = "Вместимость должна быть не меньше 1")
+  private int capacity;
 
-    @NotBlank(message = "Местоположение не может быть пустым")
-    private String location;
+  @NotBlank(message = "Местоположение не может быть пустым")
+  private String location;
 }

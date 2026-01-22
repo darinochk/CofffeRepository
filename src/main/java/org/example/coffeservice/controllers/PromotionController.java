@@ -12,42 +12,42 @@ import java.util.List;
 @RequestMapping("/promotions")
 public class PromotionController {
 
-    @Autowired
-    private PromotionService promotionService;
+  @Autowired private PromotionService promotionService;
 
-    @GetMapping("/")
-    public List<PromotionResponseDTO> getAllPromotions() {
-        try {
-            return promotionService.getAllPromotions();
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка получения акций", e);
-        }
+  @GetMapping("/")
+  public List<PromotionResponseDTO> getAllPromotions() {
+    try {
+      return promotionService.getAllPromotions();
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка получения акций", exception);
     }
+  }
 
-    @PostMapping("/create")
-    public PromotionResponseDTO createPromotion(@RequestBody PromotionRequestDTO promotionRequest) {
-        try {
-            return promotionService.createPromotion(promotionRequest);
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка создания акции", e);
-        }
+  @PostMapping("/create")
+  public PromotionResponseDTO createPromotion(@RequestBody PromotionRequestDTO promotionRequest) {
+    try {
+      return promotionService.createPromotion(promotionRequest);
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка создания акции", exception);
     }
+  }
 
-    @PutMapping("/update/{id}")
-    public PromotionResponseDTO updatePromotion(@PathVariable Long id, @RequestBody PromotionRequestDTO promotionRequest) {
-        try {
-            return promotionService.updatePromotion(id, promotionRequest);
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка обновления акции с id " + id, e);
-        }
+  @PutMapping("/update/{id}")
+  public PromotionResponseDTO updatePromotion(
+      @PathVariable Long id, @RequestBody PromotionRequestDTO promotionRequest) {
+    try {
+      return promotionService.updatePromotion(id, promotionRequest);
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка обновления акции с id " + id, exception);
     }
+  }
 
-    @DeleteMapping("/delete/{id}")
-    public void deletePromotion(@PathVariable Long id) {
-        try {
-            promotionService.deletePromotion(id);
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка удаления акции с id " + id, e);
-        }
+  @DeleteMapping("/delete/{id}")
+  public void deletePromotion(@PathVariable Long id) {
+    try {
+      promotionService.deletePromotion(id);
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка удаления акции с id " + id, exception);
     }
+  }
 }

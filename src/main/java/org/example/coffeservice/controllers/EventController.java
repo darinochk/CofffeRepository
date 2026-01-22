@@ -12,42 +12,42 @@ import java.util.List;
 @RequestMapping("/events")
 public class EventController {
 
-    @Autowired
-    private EventService eventService;
+  @Autowired private EventService eventService;
 
-    @GetMapping("/")
-    public List<EventResponseDTO> getAllEvents() {
-        try {
-            return eventService.getAllEvents();
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка получения событий", e);
-        }
+  @GetMapping("/")
+  public List<EventResponseDTO> getAllEvents() {
+    try {
+      return eventService.getAllEvents();
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка получения событий", exception);
     }
+  }
 
-    @PostMapping("/create")
-    public EventResponseDTO createEvent(@RequestBody EventRequestDTO eventRequest) {
-        try {
-            return eventService.createEvent(eventRequest);
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка создания события", e);
-        }
+  @PostMapping("/create")
+  public EventResponseDTO createEvent(@RequestBody EventRequestDTO eventRequest) {
+    try {
+      return eventService.createEvent(eventRequest);
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка создания события", exception);
     }
+  }
 
-    @PutMapping("/update/{id}")
-    public EventResponseDTO updateEvent(@PathVariable Long id, @RequestBody EventRequestDTO eventRequest) {
-        try {
-            return eventService.updateEvent(id, eventRequest);
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка обновления события с id " + id, e);
-        }
+  @PutMapping("/update/{id}")
+  public EventResponseDTO updateEvent(
+      @PathVariable Long id, @RequestBody EventRequestDTO eventRequest) {
+    try {
+      return eventService.updateEvent(id, eventRequest);
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка обновления события с id " + id, exception);
     }
+  }
 
-    @DeleteMapping("/delete/{id}")
-    public void deleteEvent(@PathVariable Long id) {
-        try {
-            eventService.deleteEvent(id);
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка удаления события с id " + id, e);
-        }
+  @DeleteMapping("/delete/{id}")
+  public void deleteEvent(@PathVariable Long id) {
+    try {
+      eventService.deleteEvent(id);
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка удаления события с id " + id, exception);
     }
+  }
 }
