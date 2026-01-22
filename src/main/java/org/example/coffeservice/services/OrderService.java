@@ -13,6 +13,7 @@ import org.example.coffeservice.repositories.FoodRepository;
 import org.example.coffeservice.repositories.OrderDetailsRepository;
 import org.example.coffeservice.repositories.OrderRepository;
 import org.example.coffeservice.utils.Constants;
+import org.example.coffeservice.utils.OrderUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -62,8 +63,33 @@ public class OrderService {
         .build();
   }
 
-  public List<OrderDetails> getOrderDetailsByBookingId(Long bookingId) {
-    return orderDetailsRepository.findByBookingId(bookingId);
+  public List<OrderDetailsResponseDTO> getOrderDetailsByBookingId(Long bookingId) {
+    List<OrderDetails> orderDetailsList = orderDetailsRepository.findByBookingId(bookingId);
+
+    if (orderDetailsList.isEmpty()) {
+      throw new IllegalArgumentException("No OrderDetails found for booking ID " + bookingId);
+    }
+
+    return orderDetailsList.stream()
+        .map(this::convertToOrderDetailsResponseDTO)
+        .collect(Collectors.toList());
+  }
+
+  private OrderDetailsResponseDTO convertToOrderDetailsResponseDTO(OrderDetails orderDetails) {
+    List<Order> orders = orderRepository.findByOrderDetailsId(orderDetails.getId());
+    return new OrderDetailsResponseDTO(
+        orderDetails.getId(),
+        orderDetails.getAmount(),
+        orders.stream()
+            .map(
+                order ->
+                    new OrderResponseDTO(
+                        order.getId(),
+                        order.getFood().getName(),
+                        order.getQuantity(),
+                        OrderUtils.calculateTotalPrice(order),
+                        order.getOrderDetails().getId()))
+            .collect(Collectors.toList()));
   }
 
   public OrderResponseDTO createOrder(OrderRequestDTO orderRequest) {
@@ -137,7 +163,7 @@ public class OrderService {
   private OrderResponseDTO convertToDTO(Order order) {
     String foodName = order.getFood().getName();
     int quantity = order.getQuantity();
-    double totalPrice = order.getTotalPrice();
+    double totalPrice = OrderUtils.calculateTotalPrice(order);
     Long orderDetailsId = order.getOrderDetails().getId();
     return new OrderResponseDTO(order.getId(), foodName, quantity, totalPrice, orderDetailsId);
   }

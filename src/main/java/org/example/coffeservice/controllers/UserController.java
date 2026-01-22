@@ -3,6 +3,7 @@ package org.example.coffeservice.controllers;
 import org.example.coffeservice.dto.request.user.UserRequestDTO;
 import org.example.coffeservice.dto.response.coffee.OrderDetailsResponseDTO;
 import org.example.coffeservice.dto.response.user.UserResponseDTO;
+import org.example.coffeservice.services.OrderService;
 import org.example.coffeservice.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,8 @@ import java.util.List;
 public class UserController {
 
   @Autowired private UserService userService;
+
+  @Autowired private OrderService orderService;
 
   @GetMapping("/")
   @PreAuthorize("hasRole('ADMIN')")
@@ -41,7 +44,7 @@ public class UserController {
   @PreAuthorize("hasRole('USER')")
   public List<OrderDetailsResponseDTO> getOrderDetailsByBooking(@PathVariable Long bookingId) {
     try {
-      return userService.getOrderDetailsByBookingId(bookingId);
+      return orderService.getOrderDetailsByBookingId(bookingId);
     } catch (Exception exception) {
       throw new RuntimeException(
           "Error retrieving OrderDetails for booking ID " + bookingId, exception);

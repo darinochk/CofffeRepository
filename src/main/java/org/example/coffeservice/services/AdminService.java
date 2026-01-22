@@ -21,6 +21,7 @@ import org.example.coffeservice.repositories.OrderRepository;
 import org.example.coffeservice.repositories.ReviewRepository;
 import org.example.coffeservice.repositories.UserRepository;
 import org.example.coffeservice.utils.Constants;
+import org.example.coffeservice.utils.OrderUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -239,10 +240,7 @@ public class AdminService {
     orderDetails.setStatus(Constants.STATUS_CONFIRMED);
 
     List<Order> orders = orderRepository.findByOrderDetailsId(orderDetailsId);
-    double totalAmount =
-        orders.stream()
-            .mapToDouble(order -> order.getQuantity() * order.getFood().getPrice())
-            .sum();
+    double totalAmount = OrderUtils.calculateTotalAmount(orders);
     orderDetails.setAmount(totalAmount);
     OrderDetails savedDetails = orderDetailsRepository.save(orderDetails);
 
@@ -296,7 +294,7 @@ public class AdminService {
         order.getId(),
         order.getFood().getName(),
         order.getQuantity(),
-        order.getTotalPrice(),
+        OrderUtils.calculateTotalPrice(order),
         order.getOrderDetails().getId());
   }
 

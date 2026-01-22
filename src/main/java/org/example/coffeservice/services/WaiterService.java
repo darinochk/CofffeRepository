@@ -10,6 +10,7 @@ import org.example.coffeservice.repositories.BookingRepository;
 import org.example.coffeservice.repositories.OrderDetailsRepository;
 import org.example.coffeservice.repositories.OrderRepository;
 import org.example.coffeservice.utils.Constants;
+import org.example.coffeservice.utils.OrderUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,10 +79,7 @@ public class WaiterService {
       throw new IllegalStateException("No orders found for these order details.");
     }
 
-    double totalAmount =
-        orders.stream()
-            .mapToDouble(order -> order.getQuantity() * order.getFood().getPrice())
-            .sum();
+    double totalAmount = OrderUtils.calculateTotalAmount(orders);
     orderDetails.setAmount(totalAmount);
 
     OrderDetails savedDetails = orderDetailsRepository.save(orderDetails);
@@ -112,7 +110,7 @@ public class WaiterService {
         order.getId(),
         order.getFood().getName(),
         order.getQuantity(),
-        order.getTotalPrice(),
+        OrderUtils.calculateTotalPrice(order),
         order.getOrderDetails().getId());
   }
 
