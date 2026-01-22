@@ -13,45 +13,45 @@ import java.util.List;
 @RequestMapping("/food")
 public class FoodController {
 
-    @Autowired
-    private FoodService foodService;
+  @Autowired private FoodService foodService;
 
-    @GetMapping("/")
-    public List<FoodResponseDTO> getAllFood() {
-        try {
-            return foodService.getAllFood();
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка получения списка блюд", e);
-        }
+  @GetMapping("/")
+  public List<FoodResponseDTO> getAllFood() {
+    try {
+      return foodService.getAllFood();
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка получения списка блюд", exception);
     }
+  }
 
-    @PostMapping("/create")
-    @PreAuthorize("hasRole('ADMIN')")
-    public FoodResponseDTO createFood(@RequestBody FoodRequestDTO foodRequest) {
-        try {
-            return foodService.createFood(foodRequest);
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка создания блюда", e);
-        }
+  @PostMapping("/create")
+  @PreAuthorize("hasRole('ADMIN')")
+  public FoodResponseDTO createFood(@RequestBody FoodRequestDTO foodRequest) {
+    try {
+      return foodService.createFood(foodRequest);
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка создания блюда", exception);
     }
+  }
 
-    @PutMapping("/update/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public FoodResponseDTO updateFood(@PathVariable Long id, @RequestBody FoodRequestDTO foodRequest) {
-        try {
-            return foodService.updateFood(id, foodRequest);
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка обновления блюда", e);
-        }
+  @PutMapping("/update/{id}")
+  @PreAuthorize("hasRole('ADMIN')")
+  public FoodResponseDTO updateFood(
+      @PathVariable Long id, @RequestBody FoodRequestDTO foodRequest) {
+    try {
+      return foodService.updateFood(id, foodRequest);
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка обновления блюда", exception);
     }
+  }
 
-    @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public void deleteFood(@PathVariable Long id) {
-        try {
-            foodService.deleteFood(id);
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка удаления блюда", e);
-        }
+  @DeleteMapping("/delete/{id}")
+  @PreAuthorize("hasRole('ADMIN')")
+  public void deleteFood(@PathVariable Long id) {
+    try {
+      foodService.deleteFood(id);
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка удаления блюда", exception);
     }
+  }
 }

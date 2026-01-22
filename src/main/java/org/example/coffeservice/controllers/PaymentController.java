@@ -9,21 +9,24 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/payments")
 public class PaymentController {
 
-    @Autowired
-    private PaymentService paymentService;
+  @Autowired private PaymentService paymentService;
 
-    @PostMapping("/init/{orderDetailsId}")
-    public PaymentSession initPayment(@PathVariable Long orderDetailsId) {
-        return paymentService.initPaymentSession(orderDetailsId);
-    }
+  @PostMapping("/init/{orderDetailsId}")
+  public PaymentSession initPayment(@PathVariable Long orderDetailsId) {
+    return paymentService.initPaymentSession(orderDetailsId);
+  }
 
-    @PostMapping("/pay/{paymentSessionId}")
-    public PaymentSession payForOrder(@PathVariable Long paymentSessionId, @RequestParam String accountNumber) {
-        return paymentService.processPayment(paymentSessionId, accountNumber);
-    }
+  @PostMapping("/pay/{paymentSessionId}")
+  public PaymentSession payForOrder(
+      @PathVariable Long paymentSessionId, @RequestParam String accountNumber) {
+    return paymentService.processPayment(paymentSessionId, accountNumber);
+  }
 
-    @PostMapping("/pay/partial/{paymentSessionId}")
-    public PaymentSession payPartial(@PathVariable Long paymentSessionId, @RequestParam String accountNumber, @RequestParam int totalInstallments) {
-        return paymentService.processPartialPayment(paymentSessionId, accountNumber, totalInstallments);
-    }
+  @PostMapping("/pay/partial/{paymentSessionId}")
+  public PaymentSession payPartial(
+      @PathVariable Long paymentSessionId,
+      @RequestParam String accountNumber,
+      @RequestParam int totalInstallments) {
+    return paymentService.processPartialPayment(paymentSessionId, accountNumber, totalInstallments);
+  }
 }

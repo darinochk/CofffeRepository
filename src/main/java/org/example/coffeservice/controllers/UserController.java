@@ -15,82 +15,83 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+  @Autowired private UserService userService;
 
-    @GetMapping("/")
-    @PreAuthorize("hasRole('ADMIN')")
-    public List<UserResponseDTO> getAllUsers() {
-        try {
-            return userService.getAllUsers();
-        } catch (Exception e) {
-            throw new RuntimeException("Error retrieving users");
-        }
+  @GetMapping("/")
+  @PreAuthorize("hasRole('ADMIN')")
+  public List<UserResponseDTO> getAllUsers() {
+    try {
+      return userService.getAllUsers();
+    } catch (Exception exception) {
+      throw new RuntimeException("Error retrieving users", exception);
     }
+  }
 
-    @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public UserResponseDTO getUserById(@PathVariable Long id) {
-        try {
-            return userService.getUserById(id);
-        } catch (Exception e) {
-            throw new RuntimeException("Error retrieving user by id");
-        }
+  @GetMapping("/{id}")
+  @PreAuthorize("hasRole('ADMIN')")
+  public UserResponseDTO getUserById(@PathVariable Long id) {
+    try {
+      return userService.getUserById(id);
+    } catch (Exception exception) {
+      throw new RuntimeException("Error retrieving user by id", exception);
     }
+  }
 
-    @GetMapping("/orderDetailsByBooking/{bookingId}")
-    @PreAuthorize("hasRole('USER')")
-    public List<OrderDetailsResponseDTO> getOrderDetailsByBooking(@PathVariable Long bookingId) {
-        try {
-            return userService.getOrderDetailsByBookingId(bookingId);
-        } catch (Exception e) {
-            throw new RuntimeException("Error retrieving OrderDetails for booking ID " + bookingId, e);
-        }
+  @GetMapping("/orderDetailsByBooking/{bookingId}")
+  @PreAuthorize("hasRole('USER')")
+  public List<OrderDetailsResponseDTO> getOrderDetailsByBooking(@PathVariable Long bookingId) {
+    try {
+      return userService.getOrderDetailsByBookingId(bookingId);
+    } catch (Exception exception) {
+      throw new RuntimeException(
+          "Error retrieving OrderDetails for booking ID " + bookingId, exception);
     }
+  }
 
-    @PostMapping("/create")
-    @PreAuthorize("hasRole('ADMIN')")
-    public UserResponseDTO createUser(@RequestBody UserRequestDTO userRequest) {
-        try {
-            return userService.createUser(userRequest);
-        } catch (Exception e) {
-            throw new RuntimeException("Error creating user");
-        }
+  @PostMapping("/create")
+  @PreAuthorize("hasRole('ADMIN')")
+  public UserResponseDTO createUser(@RequestBody UserRequestDTO userRequest) {
+    try {
+      return userService.createUser(userRequest);
+    } catch (Exception exception) {
+      throw new RuntimeException("Error creating user", exception);
     }
+  }
 
-    @PutMapping("/update")
-    public ResponseEntity<UserResponseDTO> updateUser(@RequestBody UserRequestDTO userRequest) {
-        try {
-            UserResponseDTO updatedUser = userService.updateUser(userRequest);
-            return ResponseEntity.ok(updatedUser);
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().body(null);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(null);
-        }
+  @PutMapping("/update")
+  public ResponseEntity<UserResponseDTO> updateUser(@RequestBody UserRequestDTO userRequest) {
+    try {
+      UserResponseDTO updatedUser = userService.updateUser(userRequest);
+      return ResponseEntity.ok(updatedUser);
+    } catch (IllegalArgumentException exception) {
+      return ResponseEntity.badRequest().body(null);
+    } catch (Exception exception) {
+      return ResponseEntity.status(500).body(null);
     }
+  }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
-        try {
-            userService.deleteUser(id);
-            return ResponseEntity.ok("User deleted successfully.");
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error deleting user");
-        }
+  @DeleteMapping("/delete/{id}")
+  public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+    try {
+      userService.deleteUser(id);
+      return ResponseEntity.ok("User deleted successfully.");
+    } catch (IllegalArgumentException exception) {
+      return ResponseEntity.badRequest().body(exception.getMessage());
+    } catch (Exception exception) {
+      return ResponseEntity.status(500).body("Error deleting user");
     }
+  }
 
-    @GetMapping("/search")
-    @PreAuthorize("hasRole('ADMIN')")
-    public List<UserResponseDTO> searchUsers(@RequestParam(required = false) String name,
-                                             @RequestParam(required = false) String lastname,
-                                             @RequestParam(required = false) String email) {
-        try {
-            return userService.searchUsers(name, lastname, email);
-        } catch (Exception e) {
-            throw new RuntimeException("Error searching for users");
-        }
+  @GetMapping("/search")
+  @PreAuthorize("hasRole('ADMIN')")
+  public List<UserResponseDTO> searchUsers(
+      @RequestParam(required = false) String name,
+      @RequestParam(required = false) String lastname,
+      @RequestParam(required = false) String email) {
+    try {
+      return userService.searchUsers(name, lastname, email);
+    } catch (Exception exception) {
+      throw new RuntimeException("Error searching for users", exception);
     }
+  }
 }

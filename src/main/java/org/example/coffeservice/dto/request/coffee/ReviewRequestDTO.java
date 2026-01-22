@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.coffeservice.utils.Constants;
 
 import java.util.Date;
 
@@ -16,13 +17,13 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewRequestDTO {
-    @Min(value = 1, message = "Рейтинг должен быть не меньше 1")
-    @Max(value = 5, message = "Рейтинг должен быть не больше 5")
-    private int rating;
+  @Min(value = Constants.MIN_RATING, message = "Рейтинг должен быть не меньше 1")
+  @Max(value = Constants.MAX_RATING, message = "Рейтинг должен быть не больше 5")
+  private int rating;
 
-    @NotBlank(message = "Текст отзыва не может быть пустым")
-    private String reviewText;
+  @NotBlank(message = "Текст отзыва не может быть пустым")
+  private String reviewText;
 
-    @NotNull(message = "Дата отзыва не может быть null")
-    private Date reviewDate;
+  @NotNull(message = "Дата отзыва не может быть null")
+  private Date reviewDate;
 }

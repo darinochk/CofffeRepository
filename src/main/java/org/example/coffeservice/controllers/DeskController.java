@@ -13,45 +13,45 @@ import java.util.List;
 @RequestMapping("/desks")
 public class DeskController {
 
-    @Autowired
-    private DeskService deskService;
+  @Autowired private DeskService deskService;
 
-    @GetMapping("/")
-    public List<DeskResponseDTO> getAllDesks() {
-        try {
-            return deskService.getAllDesks();
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка получения столов");
-        }
+  @GetMapping("/")
+  public List<DeskResponseDTO> getAllDesks() {
+    try {
+      return deskService.getAllDesks();
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка получения столов", exception);
     }
+  }
 
-    @PostMapping("/create")
-    @PreAuthorize("hasRole('ADMIN')")
-    public DeskResponseDTO createDesk(@RequestBody DeskRequestDTO deskRequest) {
-        try {
-            return deskService.createDesk(deskRequest);
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка создания стола");
-        }
+  @PostMapping("/create")
+  @PreAuthorize("hasRole('ADMIN')")
+  public DeskResponseDTO createDesk(@RequestBody DeskRequestDTO deskRequest) {
+    try {
+      return deskService.createDesk(deskRequest);
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка создания стола", exception);
     }
+  }
 
-    @PutMapping("/update/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public DeskResponseDTO updateDesk(@PathVariable Long id, @RequestBody DeskRequestDTO deskRequest) {
-        try {
-            return deskService.updateDesk(id, deskRequest);
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка обновления стола");
-        }
+  @PutMapping("/update/{id}")
+  @PreAuthorize("hasRole('ADMIN')")
+  public DeskResponseDTO updateDesk(
+      @PathVariable Long id, @RequestBody DeskRequestDTO deskRequest) {
+    try {
+      return deskService.updateDesk(id, deskRequest);
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка обновления стола", exception);
     }
+  }
 
-    @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public void deleteDesk(@PathVariable Long id) {
-        try {
-            deskService.deleteDesk(id);
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка удаления стола");
-        }
+  @DeleteMapping("/delete/{id}")
+  @PreAuthorize("hasRole('ADMIN')")
+  public void deleteDesk(@PathVariable Long id) {
+    try {
+      deskService.deleteDesk(id);
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка удаления стола", exception);
     }
+  }
 }

@@ -17,74 +17,81 @@ import java.util.stream.Collectors;
 @Service
 public class ReviewService {
 
-    @Autowired
-    private ReviewRepository reviewRepository;
+  @Autowired private ReviewRepository reviewRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+  @Autowired private UserRepository userRepository;
 
-    public List<ReviewResponseDTO> getAllReviews() {
-        try {
-            List<Review> reviews = reviewRepository.findAll();
-            return reviews.stream()
-                    .map(this::convertToDTO)
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка получения отзывов", e);
-        }
+  public List<ReviewResponseDTO> getAllReviews() {
+    try {
+      List<Review> reviews = reviewRepository.findAll();
+      return reviews.stream().map(this::convertToDTO).collect(Collectors.toList());
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка получения отзывов", exception);
     }
+  }
 
-    public List<ReviewResponseDTO> getReviewsByUser(Long userId) {
-        try {
-            List<Review> reviews = reviewRepository.findByUserId(userId);
-            return reviews.stream()
-                    .map(this::convertToDTO)
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка получения отзывов для пользователя с id " + userId, e);
-        }
+  public List<ReviewResponseDTO> getReviewsByUser(Long userId) {
+    try {
+      List<Review> reviews = reviewRepository.findByUserId(userId);
+      return reviews.stream().map(this::convertToDTO).collect(Collectors.toList());
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка получения отзывов для пользователя с id " + userId, exception);
     }
+  }
 
-    public ReviewResponseDTO createReview(ReviewRequestDTO reviewRequest) {
-        try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            String email = auth.getName();
-            User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
+  public ReviewResponseDTO createReview(ReviewRequestDTO reviewRequest) {
+    try {
+      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+      String email = auth.getName();
+      User currentUser =
+          userRepository
+              .findByEmail(email)
+              .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-            Review review = new Review();
-            review.setUser(currentUser);
-            review.setRating(reviewRequest.getRating());
-            review.setReviewText(reviewRequest.getReviewText());
-            review.setReviewDate(reviewRequest.getReviewDate());
+      Review review = new Review();
+      review.setUser(currentUser);
+      review.setRating(reviewRequest.getRating());
+      review.setReviewText(reviewRequest.getReviewText());
+      review.setReviewDate(reviewRequest.getReviewDate());
 
-            Review savedReview = reviewRepository.save(review);
-            return convertToDTO(savedReview);
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка создания отзыва", e);
-        }
+      Review savedReview = reviewRepository.save(review);
+      return convertToDTO(savedReview);
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка создания отзыва", exception);
     }
+  }
 
-    public void deleteReview(Long id) {
-        try {
-            Review existingReview = reviewRepository.findById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("Отзыв не найден с id " + id));
+  public void deleteReview(Long id) {
+    try {
+      Review existingReview =
+          reviewRepository
+              .findById(id)
+              .orElseThrow(() -> new IllegalArgumentException("Отзыв не найден с id " + id));
 
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            String email = auth.getName();
-            User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
+      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+      String email = auth.getName();
+      User currentUser =
+          userRepository
+              .findByEmail(email)
+              .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-            if (!existingReview.getUser().equals(currentUser)) {
-                throw new IllegalArgumentException("Вы можете удалять только свои отзывы.");
-            }
+      if (!existingReview.getUser().equals(currentUser)) {
+        throw new IllegalArgumentException("Вы можете удалять только свои отзывы.");
+      }
 
-            reviewRepository.deleteById(id);
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка удаления отзыва с id " + id, e);
-        }
+      reviewRepository.deleteById(id);
+    } catch (Exception exception) {
+      throw new RuntimeException("Ошибка удаления отзыва с id " + id, exception);
     }
+  }
 
-    private ReviewResponseDTO convertToDTO(Review review) {
-        String userName = review.getUser().getFirstName() + " " + review.getUser().getLastName();
-        return new ReviewResponseDTO(review.getId(), userName, review.getRating(), review.getReviewText(), review.getReviewDate());
-    }
+  private ReviewResponseDTO convertToDTO(Review review) {
+    String userName = review.getUser().getFirstName() + " " + review.getUser().getLastName();
+    return new ReviewResponseDTO(
+        review.getId(),
+        userName,
+        review.getRating(),
+        review.getReviewText(),
+        review.getReviewDate());
+  }
 }
