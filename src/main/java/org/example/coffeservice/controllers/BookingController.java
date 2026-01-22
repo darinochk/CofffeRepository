@@ -8,7 +8,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/bookings")
@@ -30,14 +29,7 @@ public class BookingController {
   @GetMapping("/desk/{deskId}")
   @PreAuthorize("hasRole('ADMIN')")
   public List<BookingResponseDTO> getBookingsByDesk(@PathVariable Long deskId) {
-    try {
-      return bookingService.getBookingsByDesk(deskId).stream()
-          .map(bookingService::convertToDTO)
-          .collect(Collectors.toList());
-    } catch (Exception exception) {
-      throw new RuntimeException(
-          "Ошибка получения бронирований для стола с id " + deskId, exception);
-    }
+    return bookingService.getBookingsByDesk(deskId);
   }
 
   @PostMapping("/create")

@@ -7,11 +7,9 @@ import org.example.coffeservice.models.coffee.Desk;
 import org.example.coffeservice.models.user.User;
 import org.example.coffeservice.repositories.BookingRepository;
 import org.example.coffeservice.repositories.DeskRepository;
-import org.example.coffeservice.repositories.UserRepository;
 import org.example.coffeservice.utils.Constants;
+import org.example.coffeservice.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -22,8 +20,6 @@ import java.util.stream.Collectors;
 public class BookingService {
 
   @Autowired private BookingRepository bookingRepository;
-
-  @Autowired private UserRepository userRepository;
 
   @Autowired private DeskRepository deskRepository;
 
@@ -38,12 +34,7 @@ public class BookingService {
 
   public List<BookingResponseDTO> getBookingsByUser() {
     try {
-      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-      String email = auth.getName();
-      User currentUser =
-          userRepository
-              .findByEmail(email)
-              .orElseThrow(() -> new IllegalArgumentException("User not found"));
+      User currentUser = SecurityUtils.getCurrentUser();
       List<Booking> bookings = bookingRepository.findByUserId(currentUser.getId());
       return bookings.stream().map(this::convertToDTO).collect(Collectors.toList());
     } catch (Exception exception) {
@@ -51,9 +42,10 @@ public class BookingService {
     }
   }
 
-  public List<Booking> getBookingsByDesk(Long deskId) {
+  public List<BookingResponseDTO> getBookingsByDesk(Long deskId) {
     try {
-      return bookingRepository.findByDeskId(deskId);
+      List<Booking> bookings = bookingRepository.findByDeskId(deskId);
+      return bookings.stream().map(this::convertToDTO).collect(Collectors.toList());
     } catch (Exception exception) {
       throw new RuntimeException("Ошибка получения бронирований для стола с id " + deskId, exception);
     }
@@ -61,12 +53,7 @@ public class BookingService {
 
   public BookingResponseDTO createBooking(BookingRequestDTO bookingRequest) {
     try {
-      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-      String email = auth.getName();
-      User currentUser =
-          userRepository
-              .findByEmail(email)
-              .orElseThrow(() -> new IllegalArgumentException("User not found"));
+      User currentUser = SecurityUtils.getCurrentUser();
       Desk desk =
           deskRepository
               .findById(bookingRequest.getDeskId())
@@ -103,12 +90,7 @@ public class BookingService {
               .orElseThrow(
                   () -> new IllegalArgumentException("Бронирование не найдено с id " + id));
 
-      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-      String email = auth.getName();
-      User currentUser =
-          userRepository
-              .findByEmail(email)
-              .orElseThrow(() -> new IllegalArgumentException("User not found"));
+      User currentUser = SecurityUtils.getCurrentUser();
       if (!existingBooking.getUser().equals(currentUser)) {
         throw new IllegalArgumentException("Вы можете обновлять только свои бронирования.");
       }
@@ -140,12 +122,7 @@ public class BookingService {
               .orElseThrow(
                   () -> new IllegalArgumentException("Бронирование не найдено с id " + id));
 
-      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-      String email = auth.getName();
-      User currentUser =
-          userRepository
-              .findByEmail(email)
-              .orElseThrow(() -> new IllegalArgumentException("User not found"));
+      User currentUser = SecurityUtils.getCurrentUser();
       if (!existingBooking.getUser().equals(currentUser)) {
         throw new IllegalArgumentException("Вы можете удалять только свои бронирования.");
       }

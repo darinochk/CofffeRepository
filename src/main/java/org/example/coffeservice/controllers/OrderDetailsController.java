@@ -6,6 +6,7 @@ import org.example.coffeservice.dto.response.coffee.OrderResponseDTO;
 import org.example.coffeservice.models.coffee.Order;
 import org.example.coffeservice.models.coffee.OrderDetails;
 import org.example.coffeservice.services.OrderService;
+import org.example.coffeservice.utils.OrderUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +30,7 @@ public class OrderDetailsController {
   }
 
   @GetMapping("/get/{bookingId}")
-  public List<OrderDetails> getOrderDetails(@PathVariable Long bookingId) {
+  public List<OrderDetailsResponseDTO> getOrderDetails(@PathVariable Long bookingId) {
     try {
       return orderService.getOrderDetailsByBookingId(bookingId);
     } catch (Exception exception) {
@@ -42,10 +43,7 @@ public class OrderDetailsController {
     try {
       List<Order> orders = orderService.getOrdersByOrderDetailsId(orderDetailsId);
 
-      double totalAmount =
-          orders.stream()
-              .mapToDouble(order -> order.getQuantity() * order.getFood().getPrice())
-              .sum();
+      double totalAmount = OrderUtils.calculateTotalAmount(orders);
 
       List<OrderResponseDTO> orderDTOs =
           orders.stream().map(this::convertOrderToDTO).collect(Collectors.toList());
@@ -67,7 +65,7 @@ public class OrderDetailsController {
         order.getId(),
         order.getFood().getName(),
         order.getQuantity(),
-        order.getTotalPrice(),
+        OrderUtils.calculateTotalPrice(order),
         order.getOrderDetails().getId());
   }
 }

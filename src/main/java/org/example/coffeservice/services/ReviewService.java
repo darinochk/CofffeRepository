@@ -5,10 +5,8 @@ import org.example.coffeservice.dto.response.coffee.ReviewResponseDTO;
 import org.example.coffeservice.models.coffee.Review;
 import org.example.coffeservice.models.user.User;
 import org.example.coffeservice.repositories.ReviewRepository;
-import org.example.coffeservice.repositories.UserRepository;
+import org.example.coffeservice.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,8 +16,6 @@ import java.util.stream.Collectors;
 public class ReviewService {
 
   @Autowired private ReviewRepository reviewRepository;
-
-  @Autowired private UserRepository userRepository;
 
   public List<ReviewResponseDTO> getAllReviews() {
     try {
@@ -41,12 +37,7 @@ public class ReviewService {
 
   public ReviewResponseDTO createReview(ReviewRequestDTO reviewRequest) {
     try {
-      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-      String email = auth.getName();
-      User currentUser =
-          userRepository
-              .findByEmail(email)
-              .orElseThrow(() -> new IllegalArgumentException("User not found"));
+      User currentUser = SecurityUtils.getCurrentUser();
 
       Review review = new Review();
       review.setUser(currentUser);
@@ -68,12 +59,7 @@ public class ReviewService {
               .findById(id)
               .orElseThrow(() -> new IllegalArgumentException("Отзыв не найден с id " + id));
 
-      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-      String email = auth.getName();
-      User currentUser =
-          userRepository
-              .findByEmail(email)
-              .orElseThrow(() -> new IllegalArgumentException("User not found"));
+      User currentUser = SecurityUtils.getCurrentUser();
 
       if (!existingReview.getUser().equals(currentUser)) {
         throw new IllegalArgumentException("Вы можете удалять только свои отзывы.");
