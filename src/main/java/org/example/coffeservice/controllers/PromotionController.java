@@ -1,12 +1,11 @@
 package org.example.coffeservice.controllers;
 
+import java.util.List;
 import org.example.coffeservice.dto.request.coffee.PromotionRequestDTO;
 import org.example.coffeservice.dto.response.coffee.PromotionResponseDTO;
 import org.example.coffeservice.services.PromotionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/promotions")

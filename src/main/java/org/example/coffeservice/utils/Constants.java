@@ -1,8 +1,6 @@
 package org.example.coffeservice.utils;
 
-/**
- * Constants class for application-wide constants.
- */
+/** Constants class for application-wide constants. */
 public final class Constants {
 
   private Constants() {
@@ -31,4 +29,3 @@ public final class Constants {
   public static final String STATUS_IN_PROGRESS = "IN_PROGRESS";
   public static final String STATUS_IS_BEING_PROCESSED = "IS BEING PROCESSED";
 }
-

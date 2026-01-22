@@ -37,19 +37,10 @@ class FoodControllerTest {
   @BeforeEach
   void setUp() {
     foodResponseDTO =
-        FoodResponseDTO.builder()
-            .id(1L)
-            .name("Cappuccino")
-            .price(5.50)
-            .foodType("DRINK")
-            .build();
+        FoodResponseDTO.builder().id(1L).name("Cappuccino").price(5.50).foodType("DRINK").build();
 
     foodRequestDTO =
-        FoodRequestDTO.builder()
-            .name("Cappuccino")
-            .price(5.50)
-            .foodType("DRINK")
-            .build();
+        FoodRequestDTO.builder().name("Cappuccino").price(5.50).foodType("DRINK").build();
   }
 
   @Test
@@ -59,7 +50,8 @@ class FoodControllerTest {
     when(foodService.getAllFood()).thenReturn(foods);
 
     // When & Then
-    mockMvc.perform(get("/food/"))
+    mockMvc
+        .perform(get("/food/"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].id").value(1L))
         .andExpect(jsonPath("$[0].name").value("Cappuccino"))
@@ -75,10 +67,12 @@ class FoodControllerTest {
     when(foodService.createFood(any(FoodRequestDTO.class))).thenReturn(foodResponseDTO);
 
     // When & Then
-    mockMvc.perform(post("/food/create")
-            .with(csrf())
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(foodRequestDTO)))
+    mockMvc
+        .perform(
+            post("/food/create")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(foodRequestDTO)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(1L))
         .andExpect(jsonPath("$.name").value("Cappuccino"));
@@ -93,10 +87,12 @@ class FoodControllerTest {
     when(foodService.updateFood(eq(1L), any(FoodRequestDTO.class))).thenReturn(foodResponseDTO);
 
     // When & Then
-    mockMvc.perform(put("/food/update/1")
-            .with(csrf())
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(foodRequestDTO)))
+    mockMvc
+        .perform(
+            put("/food/update/1")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(foodRequestDTO)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(1L));
 
@@ -110,9 +106,7 @@ class FoodControllerTest {
     doNothing().when(foodService).deleteFood(1L);
 
     // When & Then
-    mockMvc.perform(delete("/food/delete/1")
-            .with(csrf()))
-        .andExpect(status().isOk());
+    mockMvc.perform(delete("/food/delete/1").with(csrf())).andExpect(status().isOk());
 
     verify(foodService, times(1)).deleteFood(1L);
   }
@@ -123,10 +117,12 @@ class FoodControllerTest {
     // Given - USER role doesn't have ADMIN access
 
     // When & Then
-    mockMvc.perform(post("/food/create")
-            .with(csrf())
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(foodRequestDTO)))
+    mockMvc
+        .perform(
+            post("/food/create")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(foodRequestDTO)))
         .andExpect(status().isForbidden());
 
     verify(foodService, never()).createFood(any(FoodRequestDTO.class));
@@ -138,7 +134,8 @@ class FoodControllerTest {
     when(foodService.getAllFood()).thenReturn(Arrays.asList());
 
     // When & Then
-    mockMvc.perform(get("/food/"))
+    mockMvc
+        .perform(get("/food/"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$").isArray())
         .andExpect(jsonPath("$").isEmpty());
@@ -146,4 +143,3 @@ class FoodControllerTest {
     verify(foodService, times(1)).getAllFood();
   }
 }
-

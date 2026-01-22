@@ -1,14 +1,13 @@
 package org.example.coffeservice.models.coffee;
 
 import jakarta.persistence.*;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -18,21 +17,20 @@ import java.util.List;
 @Table
 public class OrderDetails {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "booking_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Booking booking;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "booking_id")
+  @OnDelete(action = OnDeleteAction.CASCADE)
+  private Booking booking;
 
-    private double amount;
+  private double amount;
 
-    @Column(nullable = false)
-    private String status;
+  @Column(nullable = false)
+  private String status;
 
-
-    @OneToMany(mappedBy = "orderDetails", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Order> orders;
+  @OneToMany(mappedBy = "orderDetails", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  private List<Order> orders;
 }

@@ -1,5 +1,8 @@
 package org.example.coffeservice.services;
 
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.example.coffeservice.dto.request.coffee.BookingRequestDTO;
 import org.example.coffeservice.dto.response.coffee.BookingResponseDTO;
 import org.example.coffeservice.models.coffee.Booking;
@@ -11,10 +14,6 @@ import org.example.coffeservice.utils.Constants;
 import org.example.coffeservice.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class BookingService {
@@ -47,7 +46,8 @@ public class BookingService {
       List<Booking> bookings = bookingRepository.findByDeskId(deskId);
       return bookings.stream().map(this::convertToDTO).collect(Collectors.toList());
     } catch (Exception exception) {
-      throw new RuntimeException("Ошибка получения бронирований для стола с id " + deskId, exception);
+      throw new RuntimeException(
+          "Ошибка получения бронирований для стола с id " + deskId, exception);
     }
   }
 

@@ -1,5 +1,7 @@
 package org.example.coffeservice.services;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.example.coffeservice.dto.request.coffee.OrderDetailsRequestDTO;
 import org.example.coffeservice.dto.request.coffee.OrderRequestDTO;
 import org.example.coffeservice.dto.response.coffee.OrderDetailsResponseDTO;
@@ -16,9 +18,6 @@ import org.example.coffeservice.utils.Constants;
 import org.example.coffeservice.utils.OrderUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class OrderService {

@@ -1,14 +1,13 @@
 package org.example.coffeservice.services;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.example.coffeservice.dto.request.coffee.FoodRequestDTO;
 import org.example.coffeservice.dto.response.coffee.FoodResponseDTO;
 import org.example.coffeservice.models.coffee.Food;
 import org.example.coffeservice.repositories.FoodRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class FoodService {

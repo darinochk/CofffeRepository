@@ -15,24 +15,22 @@ import org.example.coffeservice.utils.validation.ValidPhone;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserRequestDTO {
-    @NotBlank(message = "First name cannot be blank")
-    private String firstName;
+  @NotBlank(message = "First name cannot be blank")
+  private String firstName;
 
-    @NotBlank(message = "Last name cannot be blank")
-    private String lastName;
+  @NotBlank(message = "Last name cannot be blank")
+  private String lastName;
 
-    @Email(message = "Email should be valid")
-    private String email;
+  @Email(message = "Email should be valid")
+  private String email;
 
-    @NotBlank(message = "Password cannot be blank")
-    private String password;
+  @NotBlank(message = "Password cannot be blank")
+  private String password;
 
-    @ValidPhone
-    private String phone;
+  @ValidPhone private String phone;
 
-    @NotNull(message = "Locked flag must not be null")
-    private boolean locked;
+  @NotNull(message = "Locked flag must not be null")
+  private boolean locked;
 
-    @NotNull
-    private Role role;
+  @NotNull private Role role;
 }

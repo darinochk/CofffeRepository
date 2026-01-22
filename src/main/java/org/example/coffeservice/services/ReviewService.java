@@ -1,5 +1,7 @@
 package org.example.coffeservice.services;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.example.coffeservice.dto.request.coffee.ReviewRequestDTO;
 import org.example.coffeservice.dto.response.coffee.ReviewResponseDTO;
 import org.example.coffeservice.models.coffee.Review;
@@ -8,9 +10,6 @@ import org.example.coffeservice.repositories.ReviewRepository;
 import org.example.coffeservice.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ReviewService {
@@ -31,7 +30,8 @@ public class ReviewService {
       List<Review> reviews = reviewRepository.findByUserId(userId);
       return reviews.stream().map(this::convertToDTO).collect(Collectors.toList());
     } catch (Exception exception) {
-      throw new RuntimeException("Ошибка получения отзывов для пользователя с id " + userId, exception);
+      throw new RuntimeException(
+          "Ошибка получения отзывов для пользователя с id " + userId, exception);
     }
   }
 

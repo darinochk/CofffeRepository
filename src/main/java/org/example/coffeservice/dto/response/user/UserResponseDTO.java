@@ -11,11 +11,11 @@ import org.example.coffeservice.models.user.Role;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserResponseDTO {
-    private Long id;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String phone;
-    private Role role;
-    private boolean locked;
+  private Long id;
+  private String firstName;
+  private String lastName;
+  private String email;
+  private String phone;
+  private Role role;
+  private boolean locked;
 }

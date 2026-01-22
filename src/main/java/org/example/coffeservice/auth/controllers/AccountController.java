@@ -2,6 +2,8 @@ package org.example.coffeservice.auth.controllers;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import jakarta.validation.Valid;
+import java.time.Instant;
+import java.util.HashMap;
 import org.example.coffeservice.auth.models.LoginDto;
 import org.example.coffeservice.auth.models.RegisterDto;
 import org.example.coffeservice.models.user.Role;
@@ -23,145 +25,131 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
-import java.util.HashMap;
-
 @RestController
 @RequestMapping("/account")
 public class AccountController {
 
-    @Value("${security.jwt.secret-key}")
-    private String jwtSecretKey;
+  @Value("${security.jwt.secret-key}")
+  private String jwtSecretKey;
 
-    @Value("${security.jwt.issuer}")
-    private String jwtIssuer;
+  @Value("${security.jwt.issuer}")
+  private String jwtIssuer;
 
-    @Autowired
-    private UserRepository appUserRepository;
+  @Autowired private UserRepository appUserRepository;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+  @Autowired private AuthenticationManager authenticationManager;
 
-    @GetMapping("/profile")
-    public ResponseEntity<Object> profile(Authentication auth) {
-        var response = new HashMap<String, Object>();
-        response.put("Username", auth.getName());
-        response.put("Authorities", auth.getAuthorities());
+  @GetMapping("/profile")
+  public ResponseEntity<Object> profile(Authentication auth) {
+    var response = new HashMap<String, Object>();
+    response.put("Username", auth.getName());
+    response.put("Authorities", auth.getAuthorities());
 
-        var appUser = appUserRepository.findByEmail(auth.getName());
-        response.put("User", appUser);
+    var appUser = appUserRepository.findByEmail(auth.getName());
+    response.put("User", appUser);
 
-        return ResponseEntity.ok(response);
+    return ResponseEntity.ok(response);
+  }
+
+  @PostMapping("/register")
+  public ResponseEntity<Object> register(
+      @Valid @RequestBody RegisterDto registerDto, BindingResult result) {
+    if (result.hasErrors()) {
+      var errorList = result.getAllErrors();
+      var errorsMap = new HashMap<String, String>();
+
+      for (int i = 0; i < errorList.size(); i++) {
+        var error = (FieldError) errorList.get(i);
+        errorsMap.put(error.getField(), error.getDefaultMessage());
+      }
+
+      return ResponseEntity.badRequest().body(errorsMap);
     }
 
+    var bCryptEncoder = new BCryptPasswordEncoder();
+    User appUser = new User();
+    appUser.setFirstName(registerDto.getFirstName());
+    appUser.setPhone(registerDto.getPhone());
+    appUser.setLastName(registerDto.getLastName());
+    appUser.setEmail(registerDto.getEmail());
+    appUser.setRole(Role.VISITOR);
+    appUser.setPassword(bCryptEncoder.encode(registerDto.getPassword()));
 
-    @PostMapping("/register")
-    public ResponseEntity<Object> register(@Valid @RequestBody RegisterDto registerDto, BindingResult result) {
-        if (result.hasErrors()) {
-            var errorList = result.getAllErrors();
-            var errorsMap = new HashMap<String, String>();
+    try {
+      var otherUser = appUserRepository.findByEmail(registerDto.getEmail());
+      if (otherUser.isPresent()) {
+        return ResponseEntity.badRequest().body("Email address already used");
+      }
 
-            for (int i = 0; i < errorList.size(); i++) {
-                var error = (FieldError) errorList.get(i);
-                errorsMap.put(error.getField(), error.getDefaultMessage());
-            }
+      appUserRepository.save(appUser);
 
-            return ResponseEntity.badRequest().body(errorsMap);
-        }
+      String jwtToken = createJwtToken(appUser);
 
-        var bCryptEncoder = new BCryptPasswordEncoder();
-        User appUser = new User();
-        appUser.setFirstName(registerDto.getFirstName());
-        appUser.setPhone(registerDto.getPhone());
-        appUser.setLastName(registerDto.getLastName());
-        appUser.setEmail(registerDto.getEmail());
-        appUser.setRole(Role.VISITOR);
-        appUser.setPassword(bCryptEncoder.encode(registerDto.getPassword()));
+      var response = new HashMap<String, Object>();
+      response.put("token", jwtToken);
+      response.put("user", appUser);
 
+      return ResponseEntity.ok(response);
 
-        try {
-            var otherUser = appUserRepository.findByEmail(registerDto.getEmail());
-            if (otherUser.isPresent()) {
-                return ResponseEntity.badRequest().body("Email address already used");
-            }
-
-            appUserRepository.save(appUser);
-
-            String jwtToken = createJwtToken(appUser);
-
-            var response = new HashMap<String, Object>();
-            response.put("token", jwtToken);
-            response.put("user", appUser);
-
-            return ResponseEntity.ok(response);
-
-
-        } catch (Exception ex) {
-            System.out.println("There is an Exception :");
-            ex.printStackTrace();
-        }
-
-        return ResponseEntity.badRequest().body("Error");
+    } catch (Exception ex) {
+      System.out.println("There is an Exception :");
+      ex.printStackTrace();
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<Object> login(@Valid @RequestBody LoginDto loginDto, BindingResult result) {
-        if (result.hasErrors()) {
-            var errorList = result.getAllErrors();
-            var errorsMap = new HashMap<String, String>();
+    return ResponseEntity.badRequest().body("Error");
+  }
 
-            for (int i = 0; i < errorList.size(); i++) {
-                var error = (FieldError) errorList.get(i);
-                errorsMap.put(error.getField(), error.getDefaultMessage());
-            }
+  @PostMapping("/login")
+  public ResponseEntity<Object> login(@Valid @RequestBody LoginDto loginDto, BindingResult result) {
+    if (result.hasErrors()) {
+      var errorList = result.getAllErrors();
+      var errorsMap = new HashMap<String, String>();
 
-            return ResponseEntity.badRequest().body(errorsMap);
-        }
+      for (int i = 0; i < errorList.size(); i++) {
+        var error = (FieldError) errorList.get(i);
+        errorsMap.put(error.getField(), error.getDefaultMessage());
+      }
 
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginDto.getEmail(),
-                            loginDto.getPassword()
-                    )
-            );
-
-            User appUser = appUserRepository.findByEmail(loginDto.getEmail()).orElseThrow(() -> new IllegalArgumentException("User not found"));
-            String jwtToken = createJwtToken(appUser);
-
-            var response = new HashMap<String, Object>();
-            response.put("token", jwtToken);
-            response.put("user", appUser);
-
-            return ResponseEntity.ok(response);
-        } catch (Exception ex) {
-            System.out.println("There is an Exception :");
-            ex.printStackTrace();
-        }
-        return ResponseEntity.badRequest().body("Bad username or password");
+      return ResponseEntity.badRequest().body(errorsMap);
     }
 
+    try {
+      authenticationManager.authenticate(
+          new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
 
+      User appUser =
+          appUserRepository
+              .findByEmail(loginDto.getEmail())
+              .orElseThrow(() -> new IllegalArgumentException("User not found"));
+      String jwtToken = createJwtToken(appUser);
 
-    private String createJwtToken(User appUser) {
-        Instant now = Instant.now();
+      var response = new HashMap<String, Object>();
+      response.put("token", jwtToken);
+      response.put("user", appUser);
 
-        JwtClaimsSet claims = JwtClaimsSet.builder()
-                .issuer(jwtIssuer)
-                .issuedAt(now)
-                .expiresAt(now.plusSeconds(24 * 3600))
-                .subject(appUser.getEmail())
-                .claim("role", appUser.getRole())
-                .build();
-
-        var encoder = new NimbusJwtEncoder(
-                new ImmutableSecret<>(jwtSecretKey.getBytes())
-        );
-        var params = JwtEncoderParameters.from(
-                JwsHeader.with(MacAlgorithm.HS256).build(), claims
-        );
-
-        return encoder.encode(params).getTokenValue();
+      return ResponseEntity.ok(response);
+    } catch (Exception ex) {
+      System.out.println("There is an Exception :");
+      ex.printStackTrace();
     }
+    return ResponseEntity.badRequest().body("Bad username or password");
+  }
+
+  private String createJwtToken(User appUser) {
+    Instant now = Instant.now();
+
+    JwtClaimsSet claims =
+        JwtClaimsSet.builder()
+            .issuer(jwtIssuer)
+            .issuedAt(now)
+            .expiresAt(now.plusSeconds(24 * 3600))
+            .subject(appUser.getEmail())
+            .claim("role", appUser.getRole())
+            .build();
+
+    var encoder = new NimbusJwtEncoder(new ImmutableSecret<>(jwtSecretKey.getBytes()));
+    var params = JwtEncoderParameters.from(JwsHeader.with(MacAlgorithm.HS256).build(), claims);
+
+    return encoder.encode(params).getTokenValue();
+  }
 }
-

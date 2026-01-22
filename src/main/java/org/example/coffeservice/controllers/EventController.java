@@ -1,12 +1,11 @@
 package org.example.coffeservice.controllers;
 
+import java.util.List;
 import org.example.coffeservice.dto.request.coffee.EventRequestDTO;
 import org.example.coffeservice.dto.response.coffee.EventResponseDTO;
 import org.example.coffeservice.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/events")

@@ -1,5 +1,6 @@
 package org.example.coffeservice.controllers;
 
+import java.util.List;
 import org.example.coffeservice.dto.request.user.UserRequestDTO;
 import org.example.coffeservice.dto.response.coffee.OrderDetailsResponseDTO;
 import org.example.coffeservice.dto.response.user.UserResponseDTO;
@@ -9,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")

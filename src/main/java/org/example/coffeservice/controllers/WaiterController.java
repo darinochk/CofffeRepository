@@ -1,5 +1,6 @@
 package org.example.coffeservice.controllers;
 
+import java.util.List;
 import org.example.coffeservice.dto.response.coffee.BookingResponseDTO;
 import org.example.coffeservice.dto.response.coffee.OrderDetailsResponseDTO;
 import org.example.coffeservice.dto.response.coffee.OrderResponseDTO;
@@ -10,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/waiter")

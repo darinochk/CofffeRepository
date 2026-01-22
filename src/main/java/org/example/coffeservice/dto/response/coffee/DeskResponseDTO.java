@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DeskResponseDTO {
-    private Long id;
-    private int deskNumber;
-    private int capacity;
-    private String location;
+  private Long id;
+  private int deskNumber;
+  private int capacity;
+  private String location;
 }

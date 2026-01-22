@@ -1,5 +1,7 @@
 package org.example.coffeservice.controllers;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.example.coffeservice.dto.request.coffee.OrderDetailsRequestDTO;
 import org.example.coffeservice.dto.response.coffee.OrderDetailsResponseDTO;
 import org.example.coffeservice.dto.response.coffee.OrderResponseDTO;
@@ -9,9 +11,6 @@ import org.example.coffeservice.services.OrderService;
 import org.example.coffeservice.utils.OrderUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/order-details")

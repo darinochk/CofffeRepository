@@ -43,15 +43,16 @@ class UserServiceTest {
     testUser.setRole(Role.VISITOR);
     testUser.setLocked(false);
 
-    userRequestDTO = UserRequestDTO.builder()
-        .firstName("John")
-        .lastName("Doe")
-        .email("john.doe@example.com")
-        .password("password123")
-        .phone("+1234567890")
-        .locked(false)
-        .role(Role.VISITOR)
-        .build();
+    userRequestDTO =
+        UserRequestDTO.builder()
+            .firstName("John")
+            .lastName("Doe")
+            .email("john.doe@example.com")
+            .password("password123")
+            .phone("+1234567890")
+            .locked(false)
+            .role(Role.VISITOR)
+            .build();
   }
 
   @Test
@@ -113,15 +114,16 @@ class UserServiceTest {
   @Test
   void testCreateUser_InvalidRole() {
     // Given
-    UserRequestDTO invalidRequest = UserRequestDTO.builder()
-        .firstName("John")
-        .lastName("Doe")
-        .email("john.doe@example.com")
-        .password("password123")
-        .phone("+1234567890")
-        .locked(false)
-        .role(null)
-        .build();
+    UserRequestDTO invalidRequest =
+        UserRequestDTO.builder()
+            .firstName("John")
+            .lastName("Doe")
+            .email("john.doe@example.com")
+            .password("password123")
+            .phone("+1234567890")
+            .locked(false)
+            .role(null)
+            .build();
 
     // When & Then
     assertThrows(RuntimeException.class, () -> userService.createUser(invalidRequest));
@@ -130,11 +132,8 @@ class UserServiceTest {
   @Test
   void testUpdateUser_Success() {
     // Given
-    UserRequestDTO updateRequest = UserRequestDTO.builder()
-        .firstName("Jane")
-        .lastName("Smith")
-        .phone("+9876543210")
-        .build();
+    UserRequestDTO updateRequest =
+        UserRequestDTO.builder().firstName("Jane").lastName("Smith").phone("+9876543210").build();
 
     try (MockedStatic<SecurityUtils> securityUtilsMock = mockStatic(SecurityUtils.class)) {
       securityUtilsMock.when(SecurityUtils::getCurrentUser).thenReturn(testUser);
@@ -169,7 +168,7 @@ class UserServiceTest {
     // Given
     User otherUser = new User();
     otherUser.setId(2L);
-    
+
     try (MockedStatic<SecurityUtils> securityUtilsMock = mockStatic(SecurityUtils.class)) {
       securityUtilsMock.when(SecurityUtils::getCurrentUser).thenReturn(otherUser);
 
@@ -183,8 +182,10 @@ class UserServiceTest {
   void testSearchUsers_Success() {
     // Given
     List<User> users = Arrays.asList(testUser);
-    when(userRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
-        "John", null, null)).thenReturn(users);
+    when(userRepository
+            .findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
+                "John", null, null))
+        .thenReturn(users);
 
     // When
     List<UserResponseDTO> result = userService.searchUsers("John", null, null);
@@ -217,8 +218,8 @@ class UserServiceTest {
     when(userRepository.findByEmail("notfound@example.com")).thenReturn(Optional.empty());
 
     // When & Then
-    assertThrows(org.springframework.security.core.userdetails.UsernameNotFoundException.class,
+    assertThrows(
+        org.springframework.security.core.userdetails.UsernameNotFoundException.class,
         () -> userService.loadUserByUsername("notfound@example.com"));
   }
 }
-

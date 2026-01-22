@@ -1,5 +1,7 @@
 package org.example.coffeservice.services;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.example.coffeservice.dto.request.user.UserRequestDTO;
 import org.example.coffeservice.dto.response.coffee.BookingResponseDTO;
 import org.example.coffeservice.dto.response.coffee.DeskResponseDTO;
@@ -24,9 +26,6 @@ import org.example.coffeservice.utils.Constants;
 import org.example.coffeservice.utils.OrderUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class AdminService {
@@ -210,7 +209,8 @@ public class AdminService {
       Review review =
           reviewRepository
               .findById(reviewId)
-              .orElseThrow(() -> new IllegalArgumentException("Review not found with id " + reviewId));
+              .orElseThrow(
+                  () -> new IllegalArgumentException("Review not found with id " + reviewId));
       review.setReviewText(newText);
       Review updatedReview = reviewRepository.save(review);
       return convertReviewToDTO(updatedReview);
@@ -223,7 +223,8 @@ public class AdminService {
     Booking booking =
         bookingRepository
             .findById(bookingId)
-            .orElseThrow(() -> new IllegalArgumentException("Booking not found with id " + bookingId));
+            .orElseThrow(
+                () -> new IllegalArgumentException("Booking not found with id " + bookingId));
 
     booking.setStatus(Constants.STATUS_CONFIRMED);
     Booking savedBooking = bookingRepository.save(booking);
@@ -236,7 +237,9 @@ public class AdminService {
         orderDetailsRepository
             .findById(orderDetailsId)
             .orElseThrow(
-                () -> new IllegalArgumentException("OrderDetails not found with id " + orderDetailsId));
+                () ->
+                    new IllegalArgumentException(
+                        "OrderDetails not found with id " + orderDetailsId));
     orderDetails.setStatus(Constants.STATUS_CONFIRMED);
 
     List<Order> orders = orderRepository.findByOrderDetailsId(orderDetailsId);

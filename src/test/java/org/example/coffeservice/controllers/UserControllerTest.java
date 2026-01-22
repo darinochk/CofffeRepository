@@ -39,25 +39,27 @@ class UserControllerTest {
 
   @BeforeEach
   void setUp() {
-    userResponseDTO = UserResponseDTO.builder()
-        .id(1L)
-        .firstName("John")
-        .lastName("Doe")
-        .email("john.doe@example.com")
-        .phone("+1234567890")
-        .role(Role.VISITOR)
-        .locked(false)
-        .build();
+    userResponseDTO =
+        UserResponseDTO.builder()
+            .id(1L)
+            .firstName("John")
+            .lastName("Doe")
+            .email("john.doe@example.com")
+            .phone("+1234567890")
+            .role(Role.VISITOR)
+            .locked(false)
+            .build();
 
-    userRequestDTO = UserRequestDTO.builder()
-        .firstName("John")
-        .lastName("Doe")
-        .email("john.doe@example.com")
-        .password("password123")
-        .phone("+1234567890")
-        .locked(false)
-        .role(Role.VISITOR)
-        .build();
+    userRequestDTO =
+        UserRequestDTO.builder()
+            .firstName("John")
+            .lastName("Doe")
+            .email("john.doe@example.com")
+            .password("password123")
+            .phone("+1234567890")
+            .locked(false)
+            .role(Role.VISITOR)
+            .build();
   }
 
   @Test
@@ -68,7 +70,8 @@ class UserControllerTest {
     when(userService.getAllUsers()).thenReturn(users);
 
     // When & Then
-    mockMvc.perform(get("/users/"))
+    mockMvc
+        .perform(get("/users/"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].id").value(1L))
         .andExpect(jsonPath("$[0].firstName").value("John"))
@@ -84,7 +87,8 @@ class UserControllerTest {
     when(userService.getUserById(1L)).thenReturn(userResponseDTO);
 
     // When & Then
-    mockMvc.perform(get("/users/1"))
+    mockMvc
+        .perform(get("/users/1"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(1L))
         .andExpect(jsonPath("$.firstName").value("John"));
@@ -99,10 +103,12 @@ class UserControllerTest {
     when(userService.createUser(any(UserRequestDTO.class))).thenReturn(userResponseDTO);
 
     // When & Then
-    mockMvc.perform(post("/users/create")
-            .with(csrf())
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(userRequestDTO)))
+    mockMvc
+        .perform(
+            post("/users/create")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(userRequestDTO)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(1L))
         .andExpect(jsonPath("$.firstName").value("John"));
@@ -117,10 +123,12 @@ class UserControllerTest {
     when(userService.updateUser(any(UserRequestDTO.class))).thenReturn(userResponseDTO);
 
     // When & Then
-    mockMvc.perform(put("/users/update")
-            .with(csrf())
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(userRequestDTO)))
+    mockMvc
+        .perform(
+            put("/users/update")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(userRequestDTO)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(1L));
 
@@ -134,8 +142,8 @@ class UserControllerTest {
     doNothing().when(userService).deleteUser(1L);
 
     // When & Then
-    mockMvc.perform(delete("/users/delete/1")
-            .with(csrf()))
+    mockMvc
+        .perform(delete("/users/delete/1").with(csrf()))
         .andExpect(status().isOk())
         .andExpect(content().string("User deleted successfully."));
 
@@ -150,8 +158,8 @@ class UserControllerTest {
     when(userService.searchUsers("John", null, null)).thenReturn(users);
 
     // When & Then
-    mockMvc.perform(get("/users/search")
-            .param("name", "John"))
+    mockMvc
+        .perform(get("/users/search").param("name", "John"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].firstName").value("John"));
 
@@ -164,10 +172,8 @@ class UserControllerTest {
     // Given - USER role doesn't have ADMIN access
 
     // When & Then
-    mockMvc.perform(get("/users/"))
-        .andExpect(status().isForbidden());
+    mockMvc.perform(get("/users/")).andExpect(status().isForbidden());
 
     verify(userService, never()).getAllUsers();
   }
 }
-

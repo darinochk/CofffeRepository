@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FoodResponseDTO {
-    private Long id;
-    private String name;
-    private double price;
-    private String foodType;
+  private Long id;
+  private String name;
+  private double price;
+  private String foodType;
 }

@@ -30,18 +30,10 @@ class FoodServiceTest {
 
   @BeforeEach
   void setUp() {
-    testFood = Food.builder()
-        .id(1L)
-        .name("Cappuccino")
-        .price(5.50)
-        .foodType("DRINK")
-        .build();
+    testFood = Food.builder().id(1L).name("Cappuccino").price(5.50).foodType("DRINK").build();
 
-    foodRequestDTO = FoodRequestDTO.builder()
-        .name("Cappuccino")
-        .price(5.50)
-        .foodType("DRINK")
-        .build();
+    foodRequestDTO =
+        FoodRequestDTO.builder().name("Cappuccino").price(5.50).foodType("DRINK").build();
   }
 
   @Test
@@ -80,18 +72,10 @@ class FoodServiceTest {
   @Test
   void testUpdateFood_Success() {
     // Given
-    FoodRequestDTO updateRequest = FoodRequestDTO.builder()
-        .name("Latte")
-        .price(6.00)
-        .foodType("DRINK")
-        .build();
+    FoodRequestDTO updateRequest =
+        FoodRequestDTO.builder().name("Latte").price(6.00).foodType("DRINK").build();
 
-    Food updatedFood = Food.builder()
-        .id(1L)
-        .name("Latte")
-        .price(6.00)
-        .foodType("DRINK")
-        .build();
+    Food updatedFood = Food.builder().id(1L).name("Latte").price(6.00).foodType("DRINK").build();
 
     when(foodRepository.findById(1L)).thenReturn(Optional.of(testFood));
     when(foodRepository.save(any(Food.class))).thenReturn(updatedFood);
@@ -144,4 +128,3 @@ class FoodServiceTest {
     verify(foodRepository, times(1)).findAll();
   }
 }
-

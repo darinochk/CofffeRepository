@@ -2,9 +2,7 @@ package org.example.coffeservice.utils;
 
 import org.example.coffeservice.models.coffee.Order;
 
-/**
- * Utility class for order-related calculations.
- */
+/** Utility class for order-related calculations. */
 public final class OrderUtils {
 
   private OrderUtils() {
@@ -36,4 +34,3 @@ public final class OrderUtils {
         .sum();
   }
 }
-

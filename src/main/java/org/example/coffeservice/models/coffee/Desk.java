@@ -14,14 +14,14 @@ import lombok.NoArgsConstructor;
 @Table
 public class Desk {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    private int deskNumber;
+  private int deskNumber;
 
-    private int capacity;
+  private int capacity;
 
-    @Column(nullable = false)
-    private String location;
+  @Column(nullable = false)
+  private String location;
 }

@@ -14,15 +14,15 @@ import lombok.NoArgsConstructor;
 @Table
 public class Food {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(nullable = false)
-    private String name;
+  @Column(nullable = false)
+  private String name;
 
-    private double price;
+  private double price;
 
-    @Column(nullable = false)
-    private String foodType;
+  @Column(nullable = false)
+  private String foodType;
 }

@@ -10,7 +10,6 @@ import org.example.coffeservice.repositories.BookingRepository;
 import org.example.coffeservice.repositories.OrderDetailsRepository;
 import org.example.coffeservice.repositories.PaymentSessionRepository;
 import org.example.coffeservice.repositories.TransactionRepository;
-import org.example.coffeservice.repositories.UserRepository;
 import org.example.coffeservice.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

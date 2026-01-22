@@ -1,5 +1,7 @@
 package org.example.coffeservice.services;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.example.coffeservice.dto.response.coffee.BookingResponseDTO;
 import org.example.coffeservice.dto.response.coffee.OrderDetailsResponseDTO;
 import org.example.coffeservice.dto.response.coffee.OrderResponseDTO;
@@ -15,9 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class WaiterService {
@@ -101,8 +100,7 @@ public class WaiterService {
     List<Order> orders = orderRepository.findByOrderDetailsId(orderDetails.getId());
     List<OrderResponseDTO> orderDTOs =
         orders.stream().map(this::convertToOrderResponseDTO).collect(Collectors.toList());
-    return new OrderDetailsResponseDTO(
-        orderDetails.getId(), orderDetails.getAmount(), orderDTOs);
+    return new OrderDetailsResponseDTO(orderDetails.getId(), orderDetails.getAmount(), orderDTOs);
   }
 
   private OrderResponseDTO convertToOrderResponseDTO(Order order) {

@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderResponseDTO {
-    private Long id;
-    private String foodName;
-    private int quantity;
-    private double totalPrice;
-    private Long orderDetailsId;
+  private Long id;
+  private String foodName;
+  private int quantity;
+  private double totalPrice;
+  private Long orderDetailsId;
 }

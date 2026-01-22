@@ -4,9 +4,7 @@ import org.example.coffeservice.models.user.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-/**
- * Utility class for security-related operations.
- */
+/** Utility class for security-related operations. */
 public final class SecurityUtils {
 
   private SecurityUtils() {
@@ -40,4 +38,3 @@ public final class SecurityUtils {
     return authentication.getName();
   }
 }
-

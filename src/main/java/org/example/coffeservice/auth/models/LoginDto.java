@@ -11,11 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginDto {
-    @Email(message = "Email should be valid")
-    @NotNull(message = "Email can't be null")
-    private String email;
+  @Email(message = "Email should be valid")
+  @NotNull(message = "Email can't be null")
+  private String email;
 
-    @Size(min = 6, message = "Minimum password length is 6 characters")
-    private String password;
+  @Size(min = 6, message = "Minimum password length is 6 characters")
+  private String password;
 }
-
